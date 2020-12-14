@@ -4,4 +4,8 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="cat" class="acmr.springframework.ioc.entity.auth.Cat"/>
+    <bean id="catDao" class="acmr.springframework.ioc.dao.CatDaoImpl"/>
+    <bean id="catSrv" class="acmr.springframework.ioc.service.CatService">
+        <constructor-arg name="catDao" ref="catDao"/>
+    </bean>
 </beans>
