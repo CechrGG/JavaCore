@@ -1,24 +1,29 @@
 package acmr.springframework.ioc.service;
 
-import acmr.springframework.ioc.dao.CatDao;
 import acmr.springframework.ioc.entity.auth.Cat;
+import acmr.springframework.util.MybatisUtil;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
 
 public class CatService implements ICatService{
 
-    private final CatDao catDao;
-
-    public CatService(CatDao catDao) {
-        this.catDao = catDao;
-    }
-
+    private final SqlSessionFactory ssf = MybatisUtil.getSession();
 
     @Override
     public String selfIntroduce(long id) {
-        return catDao.getCatById(id).getName();
+        SqlSession sqlSession = ssf.openSession();
+        Cat cat = sqlSession.selectOne("getCatById", id);
+        sqlSession.commit();
+        sqlSession.close();
+        return cat.getName();
     }
 
     @Override
     public int register(Cat cat) {
-        return 0;
+        SqlSession sqlSession = ssf.openSession();
+        int id = sqlSession.insert("insertCat", cat);
+        sqlSession.commit();
+        sqlSession.close();
+        return id;
     }
 }

@@ -1,7 +1,6 @@
 package acmr.springframework.util;
 
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
@@ -9,7 +8,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 public class MybatisUtil {
-    public static SqlSession getSession() {
+    public static SqlSessionFactory getSession() {
         //定义读取文件名
         String resources = "mybatis-config.xml";
         //创建流
@@ -21,8 +20,6 @@ public class MybatisUtil {
             e.printStackTrace();
         }
         //初始化mybatis,创建SqlSessionFactory类的实例
-        SqlSessionFactory sqlMapper = new SqlSessionFactoryBuilder().build(reader);
-        //创建session实例
-        return sqlMapper.openSession();
+        return new SqlSessionFactoryBuilder().build(reader);
     }
 }
