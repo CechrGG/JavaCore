@@ -2,8 +2,11 @@ package acmr.springframework.ioc.service;
 
 import acmr.springframework.ioc.entity.auth.Cat;
 import acmr.springframework.util.MybatisUtil;
+import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+
+import java.util.List;
 
 public class CatService implements ICatService{
 
@@ -15,7 +18,7 @@ public class CatService implements ICatService{
         Cat cat = sqlSession.selectOne("getCatById", id);
         sqlSession.commit();
         sqlSession.close();
-        return cat.getName();
+        return "Hello, 大家好！我是" + cat.getName() + "，我今年" + cat.getAge() + "岁了！";
     }
 
     @Override
@@ -25,5 +28,23 @@ public class CatService implements ICatService{
         sqlSession.commit();
         sqlSession.close();
         return id;
+    }
+
+    @Override
+    public String getCatList(int pagenum, int pagesize) {
+        SqlSession sqlSession = ssf.openSession();
+//        Map<String, Integer> params = new HashMap<>();
+//        params.put("pagenum", pagenum);
+//        params.put("pagesize", pagesize);
+        RowBounds bounds = new RowBounds(pagenum, pagesize);
+        List<Cat> cats = sqlSession.selectList("getCatByPage", new Object(), bounds);
+        sqlSession.commit();
+        sqlSession.close();
+        StringBuilder catList = new StringBuilder("id, name\n");
+        for(Cat cat : cats) {
+            catList.append(cat.getId() + ", " + cat.getName() + "\n");
+        }
+        return catList.toString();
+
     }
 }

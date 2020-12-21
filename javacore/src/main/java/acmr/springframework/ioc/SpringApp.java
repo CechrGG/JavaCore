@@ -15,9 +15,10 @@ public class SpringApp {
         SpringUtil.getContext();
         CatService catSrv = SpringUtil.getBean("catSrv", CatService.class);
         Cat cat = SpringUtil.getBean("cat");
-        cat.setName("虎妞");
+        cat.setName("端午");
+        cat.setOwner_id(1);
         cat.setAge(1);
-        cat.setColor(CatColor.white.ordinal());
+        cat.setColor(CatColor.dragonli.ordinal());
         try {
             cat.setBirthday(StringUtil.strToDate("2019-04-28"));
             cat.setDeathday(StringUtil.strToDate("2099-12-30"));
@@ -26,11 +27,13 @@ public class SpringApp {
         }
         cat.setGmt_create(new Date());
         cat.setGmt_update(new Date());
-        cat.setSex('F');
+        cat.setSex('M');
         cat.setWeight(5.6f);
         cat.setLength(24.6f);
         cat.setMemo("备注");
 
-        System.out.println(catSrv.selfIntroduce(catSrv.register(cat)));
+        catSrv.register(cat);
+        System.out.println(catSrv.selfIntroduce(cat.getId()));
+        System.out.println(catSrv.getCatList(1,5));
     }
 }
