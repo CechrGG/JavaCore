@@ -1,8 +1,8 @@
 package acmr.springframework.ioc.service;
 
 import acmr.springframework.ioc.entity.auth.Cat;
+import acmr.springframework.ioc.entity.common.PageHelper;
 import acmr.springframework.util.MybatisUtil;
-import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 
@@ -36,8 +36,8 @@ public class CatService implements ICatService{
 //        Map<String, Integer> params = new HashMap<>();
 //        params.put("pagenum", pagenum);
 //        params.put("pagesize", pagesize);
-        RowBounds bounds = new RowBounds(pagenum, pagesize);
-        List<Cat> cats = sqlSession.selectList("getCatByPage", new Object(), bounds);
+//        RowBounds bounds = new RowBounds(pagenum, pagesize);
+        List<Cat> cats = sqlSession.selectList("getCatByPage", new PageHelper(pagenum, pagesize));
         sqlSession.commit();
         sqlSession.close();
         StringBuilder catList = new StringBuilder("id, name\n");

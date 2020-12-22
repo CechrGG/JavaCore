@@ -11,7 +11,7 @@
                     values (#{id},#{name},#{owner_id},#{sex},#{breed},#{color},#{weight},#{length},#{age},#{birthday},#{deathday},
                     #{memo},#{gmt_create},#{gmt_update})
     </insert>
-    <select id="getCatByPage" resultType="acmr.springframework.ioc.entity.auth.Cat">
-        select * from cat order by id
+    <select id="getCatByPage" parameterType="acmr.springframework.ioc.entity.common.PageHelper" resultType="acmr.springframework.ioc.entity.auth.Cat">
+        select * from cat order by id limit #{offset},#{limit}
     </select>
 </mapper>

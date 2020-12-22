@@ -6,6 +6,7 @@
     <settings>
         <setting name="logImpl" value="log4j"/>
     </settings>
+    <!--
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC"/>
@@ -17,6 +18,7 @@
             </dataSource>
         </environment>
     </environments>
+    -->
     <mappers>
         <mapper resource="config/mybatis/CatDao.xml"/>
     </mappers>
