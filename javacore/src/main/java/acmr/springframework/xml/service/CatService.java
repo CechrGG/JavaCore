@@ -1,7 +1,7 @@
-package acmr.springframework.ioc.service;
+package acmr.springframework.xml.service;
 
-import acmr.springframework.ioc.entity.auth.Cat;
-import acmr.springframework.ioc.entity.common.PageHelper;
+import acmr.springframework.xml.entity.Cat;
+import acmr.springframework.util.PageHelper;
 import acmr.springframework.util.MybatisUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;

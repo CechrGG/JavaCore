@@ -1,6 +1,6 @@
-package acmr.springframework.ioc.service;
+package acmr.springframework.xml.service;
 
-import acmr.springframework.ioc.entity.auth.Cat;
+import acmr.springframework.xml.entity.Cat;
 
 public interface ICatService {
     String selfIntroduce(long id);

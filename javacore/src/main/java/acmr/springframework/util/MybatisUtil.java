@@ -10,7 +10,7 @@ import java.io.Reader;
 public class MybatisUtil {
     public static SqlSessionFactory getSession() {
         //定义读取文件名
-        String resources = "mybatis-config.xml";
+        String resources = "xmlConfig/mybatis-config.xml";
         //创建流
         Reader reader=null;
         try {

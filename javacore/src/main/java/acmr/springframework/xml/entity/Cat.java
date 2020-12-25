@@ -1,4 +1,4 @@
-package acmr.springframework.ioc.entity.auth;
+package acmr.springframework.xml.entity;
 
 import java.util.Date;
 
@@ -12,8 +12,8 @@ public class Cat {
     private float weight;
     private float length;
     private int age;
-    private Date birthday;
-    private Date deathday;
+    private Date gmt_birthday;
+    private Date gmt_deathday;
     private String memo;
     private Date gmt_create;
     private Date gmt_update;
@@ -90,20 +90,20 @@ public class Cat {
         this.age = age;
     }
 
-    public Date getBirthday() {
-        return birthday;
+    public Date getGmt_birthday() {
+        return gmt_birthday;
     }
 
-    public void setBirthday(Date birthday) {
-        this.birthday = birthday;
+    public void setGmt_birthday(Date gmt_birthday) {
+        this.gmt_birthday = gmt_birthday;
     }
 
-    public Date getDeathday() {
-        return deathday;
+    public Date getGmt_deathday() {
+        return gmt_deathday;
     }
 
-    public void setDeathday(Date deathday) {
-        this.deathday = deathday;
+    public void setGmt_deathday(Date gmt_deathday) {
+        this.gmt_deathday = gmt_deathday;
     }
 
     public String getMemo() {

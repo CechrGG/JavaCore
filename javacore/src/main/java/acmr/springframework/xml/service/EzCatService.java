@@ -1,8 +1,8 @@
-package acmr.springframework.ioc.service;
+package acmr.springframework.xml.service;
 
-import acmr.springframework.ioc.dao.CatDao;
-import acmr.springframework.ioc.entity.auth.Cat;
-import acmr.springframework.ioc.entity.common.PageHelper;
+import acmr.springframework.xml.dao.CatDao;
+import acmr.springframework.xml.entity.Cat;
+import acmr.springframework.util.PageHelper;
 
 import java.util.List;
 
@@ -10,7 +10,15 @@ public class EzCatService implements ICatService{
 
     private CatDao catDao;
 
-    public EzCatService(CatDao catDao) {
+//    public EzCatService(CatDao catDao) {
+//        this.catDao = catDao;
+//    }
+
+    public CatDao getCatDao() {
+        return catDao;
+    }
+
+    public void setCatDao(CatDao catDao) {
         this.catDao = catDao;
     }
 

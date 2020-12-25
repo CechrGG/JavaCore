@@ -1,4 +1,4 @@
-package acmr.springframework.ioc.entity.common;
+package acmr.springframework.util;
 
 public class PageHelper {
     private int offset;

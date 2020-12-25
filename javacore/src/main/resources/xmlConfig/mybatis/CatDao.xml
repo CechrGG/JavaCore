@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="acmr.springframework.xml.dao.CatDao">
+    <select id="getCatById" parameterType="long" resultType="acmr.springframework.xml.entity.Cat">
+        select * from cat where id=#{id}
+    </select>
+    <insert id="insertCat" parameterType="acmr.springframework.xml.entity.Cat" useGeneratedKeys="true" keyProperty="id">
+        insert into cat(id,name,owner_id,sex,breed,color,weight,length,age,gmt_birthday,gmt_deathday,memo,gmt_create,gmt_update)
+                    values (#{id},#{name},#{owner_id},#{sex},#{breed},#{color},#{weight},#{length},#{age},#{gmt_birthday},#{gmt_deathday},
+                    #{memo},#{gmt_create},#{gmt_update})
+    </insert>
+    <select id="getCatByPage" parameterType="acmr.springframework.util.PageHelper" resultType="acmr.springframework.xml.entity.Cat">
+        select * from cat order by id limit #{offset},#{limit}
+    </select>
+</mapper>

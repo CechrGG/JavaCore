@@ -20,6 +20,6 @@
     </environments>
     -->
     <mappers>
-        <mapper resource="config/mybatis/CatDao.xml"/>
+        <mapper resource="xmlConfig/mybatis/CatDao.xml"/>
     </mappers>
 </configuration>

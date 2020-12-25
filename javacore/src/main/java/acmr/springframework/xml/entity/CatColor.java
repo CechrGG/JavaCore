@@ -1,4 +1,4 @@
-package acmr.springframework.ioc.entity.common;
+package acmr.springframework.xml.entity;
 
 public enum CatColor {
     white("白色"),
