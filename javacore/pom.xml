@@ -5,39 +5,32 @@
   <groupId>acmr</groupId>
   <artifactId>javacore</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
-  <packaging>jar</packaging>
-
+  <packaging>war</packaging>
   <name>javacore</name>
   <url>http://maven.apache.org</url>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring.base.version>5.3.2</spring.base.version>
   </properties>
 
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-context
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
-      <version>5.3.1</version>
-    </dependency>
+      <version>${spring.base.version}</version>
+    </dependency> -->
     <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-jdbc</artifactId>
-      <version>5.3.1</version>
+      <version>${spring.base.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>${spring.base.version}</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
@@ -75,4 +68,28 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
+
+  <build>
+    <finalName>springtest</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+        <version>3.1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <warSourceDirectory>web</warSourceDirectory>
+        </configuration>
+        <version>3.2.3</version>
+      </plugin>
+    </plugins>
+  </build>
 </project>
