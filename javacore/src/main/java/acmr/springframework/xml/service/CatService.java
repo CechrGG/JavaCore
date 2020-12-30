@@ -31,7 +31,7 @@ public class CatService implements ICatService{
     }
 
     @Override
-    public String getCatList(int pagenum, int pagesize) {
+    public List<Cat> getCatList(int pagenum, int pagesize) {
         SqlSession sqlSession = ssf.openSession();
 //        Map<String, Integer> params = new HashMap<>();
 //        params.put("pagenum", pagenum);
@@ -44,7 +44,7 @@ public class CatService implements ICatService{
         for(Cat cat : cats) {
             catList.append(cat.getId() + ", " + cat.getName() + "\n");
         }
-        return catList.toString();
+        return cats;
 
     }
 }

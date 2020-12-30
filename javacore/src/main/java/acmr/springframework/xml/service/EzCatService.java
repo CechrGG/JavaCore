@@ -34,12 +34,12 @@ public class EzCatService implements ICatService{
     }
 
     @Override
-    public String getCatList(int pagenum, int pagesize) {
+    public List<Cat> getCatList(int pagenum, int pagesize) {
         List<Cat> cats = catDao.getCatByPage(new PageHelper(pagenum, pagesize));
-        StringBuilder catList = new StringBuilder("id, name\n");
-        for(Cat cat : cats) {
-            catList.append(cat.getId() + ", " + cat.getName() + "\n");
-        }
-        return catList.toString();
+//        StringBuilder catList = new StringBuilder("id, name\n");
+//        for(Cat cat : cats) {
+//            catList.append(cat.getId() + ", " + cat.getName() + "\n");
+//        }
+        return cats;
     }
 }
