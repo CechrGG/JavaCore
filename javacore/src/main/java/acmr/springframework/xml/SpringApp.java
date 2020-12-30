@@ -20,7 +20,6 @@ public class SpringApp {
         Cat cat = SpringXmlUtil.getBean("cat");
         cat.setName("虎妞");
         cat.setOwner_id(1);
-        cat.setAge(1);
         cat.setColor(CatColor.dragonli.ordinal());
         try {
             cat.setGmt_birthday(StringUtil.strToDate("2019-04-28"));
@@ -44,7 +43,6 @@ public class SpringApp {
         System.out.println(ezCatSrv.getCatList(2,5));
         Slave slave = new Slave();
         slave.setName("老陈");
-        slave.setAge(31);
         slave.setSex('F');
         slave.setMobile("1331133341");
         try {

@@ -10,7 +10,7 @@ public class Slave {
     private String name;
     private char sex;
     private String mobile;
-    private int age;
+    private Date gmt_birthday;
     private Date gmt_enslaved;
     private String memo;
     private Date gmt_create;
@@ -48,12 +48,12 @@ public class Slave {
         this.mobile = mobile;
     }
 
-    public int getAge() {
-        return age;
+    public Date getGmt_birthday() {
+        return gmt_birthday;
     }
 
-    public void setAge(int age) {
-        this.age = age;
+    public void setGmt_birthday(Date gmt_birthday) {
+        this.gmt_birthday = gmt_birthday;
     }
 
     public Date getGmt_enslaved() {

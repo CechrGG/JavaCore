@@ -11,7 +11,6 @@ public class Cat {
     private int color;
     private float weight;
     private float length;
-    private int age;
     private Date gmt_birthday;
     private Date gmt_deathday;
     private String memo;
@@ -80,14 +79,6 @@ public class Cat {
 
     public void setLength(float length) {
         this.length = length;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
     }
 
     public Date getGmt_birthday() {

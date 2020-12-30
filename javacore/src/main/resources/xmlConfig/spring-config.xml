@@ -28,9 +28,15 @@
         <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
     </bean>
 
-    <bean id="cat" class="acmr.springframework.xml.entity.Cat"/>
     <bean id="catSrv" class="acmr.springframework.xml.service.CatService"/>
     <bean id="ezCatSrv" class="acmr.springframework.xml.service.EzCatService">
         <property name="catDao" ref="catDao"/>
+    </bean>
+    <bean id="timerSrv" class="acmr.springframework.util.timer.TimerService">
+        <property name="cronMap">
+            <map>
+                <entry key="catfactory" value="0/30 * * * * ?"/>
+            </map>
+        </property>
     </bean>
 </beans>

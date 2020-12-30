@@ -7,6 +7,7 @@ public class SpringXmlUtil {
     public static ClassPathXmlApplicationContext getContext() {
         if(ctx == null) {
             ctx = new ClassPathXmlApplicationContext("xmlConfig/spring-config.xml");
+
         }
         return ctx;
     }

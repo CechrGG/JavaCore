@@ -1,5 +1,6 @@
 package acmr.springframework.xml.service;
 
+import acmr.springframework.util.StringUtil;
 import acmr.springframework.xml.dao.CatDao;
 import acmr.springframework.xml.entity.Cat;
 import acmr.springframework.util.PageHelper;
@@ -25,7 +26,7 @@ public class EzCatService implements ICatService{
     @Override
     public String selfIntroduce(long id) {
         Cat cat = catDao.getCatById(id);
-        return "Hello, 大家好！我是" + cat.getName() + "，我今年" + cat.getAge() + "岁了！";
+        return "Hello, 大家好！我是" + cat.getName() + "，我今年" + StringUtil.getAge(cat.getGmt_birthday()) + "岁了！";
     }
 
     @Override

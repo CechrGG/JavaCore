@@ -1,5 +1,6 @@
 package acmr.springframework.xml.service;
 
+import acmr.springframework.util.StringUtil;
 import acmr.springframework.xml.entity.Cat;
 import acmr.springframework.util.PageHelper;
 import acmr.springframework.util.MybatisUtil;
@@ -18,7 +19,7 @@ public class CatService implements ICatService{
         Cat cat = sqlSession.selectOne("getCatById", id);
         sqlSession.commit();
         sqlSession.close();
-        return "Hello, 大家好！我是" + cat.getName() + "，我今年" + cat.getAge() + "岁了！";
+        return "Hello, 大家好！我是" + cat.getName() + "，我今年" + StringUtil.getAge(cat.getGmt_birthday()) + "岁了！";
     }
 
     @Override
