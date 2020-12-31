@@ -14,7 +14,7 @@ import java.util.Random;
 
 public class CatFactory implements Job {
 
-    private Logger logger = LogManager.getLogger(Job.class);
+    private Logger logger = LogManager.getLogger(CatFactory.class);
     private final String openTime = "2020-12-31";   //开业时间
 
     @Override
@@ -43,7 +43,7 @@ public class CatFactory implements Job {
             }
         } catch (Exception e) {
 //            e.printStackTrace();
-            logger.info(e.getMessage());
+            logger.error(e.getMessage());
         }
     }
 }

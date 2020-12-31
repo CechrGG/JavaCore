@@ -1,7 +1,10 @@
 package acmr.springframework;
 
+import acmr.springframework.annotation.service.SlaveFactory;
+import acmr.springframework.util.SpringAtUtil;
 import acmr.springframework.util.SpringXmlUtil;
-import acmr.springframework.util.timer.TimerService;
+import acmr.springframework.util.timer.AnnotationTimerService;
+import acmr.springframework.util.timer.XmlTimerService;
 import acmr.springframework.xml.service.CatFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -16,14 +19,19 @@ public class StartupListener implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         logger.info("铲屎官日常系统启动==>ServletContextListener.contextInitialized");
-        TimerService timerSrv = SpringXmlUtil.getBean("timerSrv", TimerService.class);
+        XmlTimerService timerSrv = SpringXmlUtil.getBean("xmlTimerSrv", XmlTimerService.class);
         timerSrv.addJob("catfactory", CatFactory.class);
+        AnnotationTimerService atTimerSrv = SpringAtUtil.getBean("atTimerSrv", AnnotationTimerService.class);
+        atTimerSrv.addJob("slavefactory", SlaveFactory.class);
         timerSrv.start();
+        atTimerSrv.start();
     }
 
     @Override
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        TimerService timerSrv = SpringXmlUtil.getBean("timerSrv", TimerService.class);
+        XmlTimerService timerSrv = SpringXmlUtil.getBean("timerSrv", XmlTimerService.class);
         timerSrv.stop();
+        AnnotationTimerService atTimerSrv = SpringAtUtil.getBean("atTimerSrv", AnnotationTimerService.class);
+        atTimerSrv.stop();
     }
 }

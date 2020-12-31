@@ -11,7 +11,7 @@ import javax.sql.DataSource;
 
 @Configuration  //核心配置类
 @MapperScan("acmr.springframework.annotation.dao")  //mybatis mapper扫描
-@ComponentScan("acmr.springframework.annotation")   //spring注解扫描
+@ComponentScan({"acmr.springframework.annotation", "acmr.springframework.util.timer"})   //spring注解扫描
 public class AppConfig {
 
     @Bean

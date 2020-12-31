@@ -32,11 +32,10 @@
     <bean id="ezCatSrv" class="acmr.springframework.xml.service.EzCatService">
         <property name="catDao" ref="catDao"/>
     </bean>
-    <bean id="timerSrv" class="acmr.springframework.util.timer.TimerService">
-        <property name="cronMap">
-            <map>
-                <entry key="catfactory" value="0/30 * * * * ?"/>
-            </map>
-        </property>
+    <bean id="timerConfig" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="location" value="classpath:timer.properties"/>
+    </bean>
+    <bean id="xmlTimerSrv" class="acmr.springframework.util.timer.XmlTimerService">
+        <property name="cronMap" ref="timerConfig"/>
     </bean>
 </beans>

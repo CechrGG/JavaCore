@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Random;
 
 public class StringUtil {
 
@@ -21,6 +22,7 @@ public class StringUtil {
     public static final SimpleDateFormat FORMAT_DATE = new SimpleDateFormat("yyyy-MM-dd");
     public static final SimpleDateFormat FORMAT_TIME = new SimpleDateFormat("HH:mm:ss");
     public static final int DAY_TIME = 24 * 60 * 60 * 1000;
+    public static final char[] MOBILE_POOL= {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     public static Date strToDatetime(String date) throws ParseException {
         return FORMAT_DATETIME.parse(date);
@@ -30,6 +32,11 @@ public class StringUtil {
         return FORMAT_DATE.parse(date);
     }
 
+    /**
+     * 生成某个日期开始的时间戳
+     * @param date
+     * @return
+     */
     public static long getTimeStamp(String date) {
         try {
             return System.currentTimeMillis() - FORMAT_DATE.parse(date).getTime();
@@ -37,6 +44,19 @@ public class StringUtil {
             e.printStackTrace();
             return 0;
         }
+    }
+
+    /**
+     * 随机生成手机号码
+     * @return
+     */
+    public static String getMobile() {
+        StringBuilder mobile = new StringBuilder("1");
+        Random random = new Random();
+        for(int i = 0; i < 10; i++) {
+            mobile.append(MOBILE_POOL[random.nextInt(MOBILE_POOL.length)]);
+        }
+        return mobile.toString();
     }
 
     /**

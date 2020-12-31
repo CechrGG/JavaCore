@@ -4,14 +4,21 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.springframework.beans.factory.config.PropertiesFactoryBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.Properties;
 
-public class TimerService {
+@Service("atTimerSrv")
+public class AnnotationTimerService {
 
-    private final Logger logger = LogManager.getLogger(TimerService.class);
-    private Map<String, String> cronMap = new HashMap<>();
+    private final Logger logger = LogManager.getLogger(AnnotationTimerService.class);
+    @Resource(name = "crons")
+    private Properties crons;
     private Scheduler scheduler;
 
     public void addJob(String code, Class<? extends Job> job){
@@ -20,17 +27,21 @@ public class TimerService {
                 scheduler = StdSchedulerFactory.getDefaultScheduler();
             }
             JobDetail jobDetail = JobBuilder.newJob(job).withIdentity(code, Scheduler.DEFAULT_GROUP).build();
+            String cron = crons.getProperty(code);
             Trigger trigger = TriggerBuilder.newTrigger().withIdentity(code, Scheduler.DEFAULT_GROUP)
-                    .withSchedule(CronScheduleBuilder.cronSchedule(cronMap.get(code))).build();
+                    .withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
             scheduler.scheduleJob(jobDetail, trigger);
             logger.info("定时任务--" + code + "--初始化完成");
-        } catch (SchedulerException e) {
-            logger.info(e.getMessage());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
         }
     }
 
-    public void setCronMap(Map<String, String> cronMap) {
-        this.cronMap = cronMap;
+    @Bean("crons")
+    public PropertiesFactoryBean getCrons() throws IOException {
+        PropertiesFactoryBean propertiesFactoryBean = new PropertiesFactoryBean();
+        propertiesFactoryBean.setLocation(new ClassPathResource("timer.properties"));
+        return propertiesFactoryBean;
     }
 
     public void start() {
