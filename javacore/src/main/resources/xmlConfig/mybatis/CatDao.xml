@@ -7,8 +7,8 @@
         select * from auth_cat where id=#{id}
     </select>
     <insert id="insertCat" parameterType="acmr.springframework.xml.entity.Cat" useGeneratedKeys="true" keyProperty="id">
-        insert into auth_cat(id,name,owner_id,sex,breed,color,weight,length,gmt_birthday,gmt_deathday,memo,gmt_create,gmt_update)
-                    values (#{id},#{name},#{owner_id},#{sex},#{breed},#{color},#{weight},#{length},#{gmt_birthday},#{gmt_deathday},
+        insert into auth_cat(name,owner_id,sex,breed,color,weight,length,gmt_birthday,gmt_deathday,memo,gmt_create,gmt_update)
+                    values (#{name},#{owner_id},#{sex},#{breed},#{color},#{weight},#{length},#{gmt_birthday},#{gmt_deathday},
                     #{memo},#{gmt_create},#{gmt_update})
     </insert>
     <select id="getCatByPage" parameterType="acmr.springframework.util.PageHelper" resultType="acmr.springframework.xml.entity.Cat">

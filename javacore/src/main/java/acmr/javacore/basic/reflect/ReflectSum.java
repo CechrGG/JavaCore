@@ -1,6 +1,3 @@
-/**
- * 
- */
 package acmr.javacore.basic.reflect;
 
 /**
