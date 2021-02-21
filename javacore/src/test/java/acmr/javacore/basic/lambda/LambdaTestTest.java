@@ -34,4 +34,9 @@ public class LambdaTestTest {
 
         array.stream().filter(integer -> integer > 10).forEach(System.out::println);
     }
+
+    @Test
+    public void test() {
+
+    }
 }
