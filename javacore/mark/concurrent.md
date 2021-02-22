@@ -96,30 +96,123 @@
    > 由于 Java 语言天生就具备多线程特性，线程对立这种排斥多线程的代码是很少出现的，而且通常都是有害的，应当尽量避免。
 6. 线程安全有哪些实现思路？
    > 1. 阻塞同步（互斥同步）
+   > 
+   >     悲观并发策略
+   >     - synchronized 对于同一线程是可重入的，线程执行完之前会阻塞其他线程，性能较低，适合并发量不大的情况
+   >     - ReentrantLock
+   >        - 等待可中断，持有锁的线程长时间不释放，等待线程可执行其他操作
+   >        - 可实现公平锁，根据等待锁时间顺序依次获取锁，而synchronized是非公平锁
+   >        - 可指定解锁条件，绑定多个Condition
    > 2. 非阻塞同步
+   >
+   >     乐观并发策略， 操作和冲突检测放在一个指令集里
+   >- 测试并设置(Test And Set)
+   >     - 获取并增加(Fetch And Increment)
+   >     - 交换(Swap)
+   >     - **比较并交换(Compare And Swap)**
+   >     - 加载链接/条件存储(Load Linked/Store Conditional)
+   >> CAS需要三个参数（V,A,B）,其中V是内存地址，A是旧值，B是新值，
+   > > 当且仅当V符合A时，才将B更新到V,这是一个原子操作。
+   > > 如 AtomicInteger的自增操作
+   ```java
+   public class FutureTest {
+      private static final AtomicInteger count = new AtomicInteger(0);
+      @SuppressWarnings("rawtypes")
+      public static void main(String[] args) throws InterruptedException {
+         ExecutorService executorService = Executors.newFixedThreadPool(100);
+         List<Future<String>> futures = new ArrayList<>();
+         for(int i = 0; i < 100; i++) {
+            futures.add(executorService.submit(() -> {
+               for(int j = 0; j < 100; j++) {
+                  count.addAndGet(1);
+               }
+               return Thread.currentThread().getName() + "-" + count.get();
+            }));
+         }
+         executorService.shutdown();
+         boolean done = false;
+         while (!done) {
+         Thread.sleep(10);
+         for (Future future : futures) {
+            if (!future.isDone()) {
+               done = false;
+               break;
+            } else {
+               System.out.println(future.get());
+            }
+            done = true;
+            }
+         }
+         System.out.println(count.get());
+      }
+   }
+   ```
    > 3. 无同步方案
+   >  - 可重入代码。如果不涉及共享数据就不需要做同步，结果可预测的
+   >  - 线程本地存储。如果一段代码中所需要的数据必须于其他代码共享，那就看看这些共享数据的代码是否能保证在同一个线程中执行？
+   >  如果能保证，我们就可以把共享数据的可见范围限制在同一个线程之内，这样，无需同步也能保证线程之间不出现数据争用问题
+   >> ThreadLocal
+   >> 
+   >> 每个访问ThreadLocal变量的线程都会在本地工作内存中创建一个副本，所有操作都只对当前线程有影响，而不会同步到主内存。
+   > > 注意每个线程中使用完之后需要remove,否则可能发生内存泄漏
+   ```java
+   @SuppressWarnings({"rawtypes", "unchecked"})
+   public class ThreadLocalTest {
+    public static ThreadLocal local = new ThreadLocal();
+
+    public static void main(String[] args)  {
+        new Thread(()->{
+            local.set(1);
+            System.out.println(Thread.currentThread().getName() + "-" + local.get());
+        }).start();
+
+        new Thread(()->{
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println(Thread.currentThread().getName() + "-" +  local.get());
+            local.set("a");
+            System.out.println(Thread.currentThread().getName() + "-" +  local.get());
+            local.remove();
+        }).start();
+    }
+   }
+   ```
 7. 如何理解并发和并行的区别？
+   > 并发：不同代码块交替执行，逻辑同时，同时是假象
+   > 
+   > 并行：不同代码块同时执行，物理同时
+
 ##Java 并发 - 线程基础
-线程有哪几种状态？分别说明从一种状态到另一种状态转变有哪些方式？
-通常线程有哪几种使用方式？
-基础线程机制有哪些？
-线程的中断方式有哪些？
-线程的互斥同步方式有哪些？如何比较和选择？
-线程之间有哪些协作方式？
-并发关键字：volatile，final，synchronized
-关键字: synchronized详解
-Synchronized可以作用在哪里？分别通过对象锁和类锁进行举例。
-Synchronized本质上是通过什么保证线程安全的？分三个方面回答：加锁和释放锁的原理，可重入原理，保证可见性原理。
-Synchronized由什么样的缺陷？Java Lock是怎么弥补这些缺陷的。
-Synchronized和Lock的对比，和选择？
-Synchronized在使用时有何注意事项？
-Synchronized修饰的方法在抛出异常时,会释放锁吗？
-多个线程等待同一个snchronized锁的时候，JVM如何选择下一个获取锁的线程？
-Synchronized使得同时只有一个线程可以执行，性能比较差，有什么提升的方法？
-我想更加灵活地控制锁的释放和获取(现在释放锁和获取锁的时机都被规定死了)，怎么办？
-什么是锁的升级和降级？什么是JVM里的偏斜锁、轻量级锁、重量级锁？
-不同的JDK中对Synchronized有何优化？
-关键字: volatile详解
+1. 线程有哪几种状态？分别说明从一种状态到另一种状态转变有哪些方式？
+   ![JAVA线程状态](./image/thread-state.jpg)
+   - NEW 初始状态
+   - RUNNABLE 运行，包括ready和running
+   - BLOCKED   阻塞
+   - WAITING   等待
+   - TIME_WAITING 超时等待
+   - TERMINATED   终止
+2. 通常线程有哪几种使用方式？
+3. 基础线程机制有哪些？
+4. 线程的中断方式有哪些？
+5. 线程的互斥同步方式有哪些？如何比较和选择？
+6. 线程之间有哪些协作方式？
+## 并发关键字：volatile，final，synchronized
+### 关键字: synchronized详解
+1. Synchronized可以作用在哪里？分别通过对象锁和类锁进行举例。
+2. Synchronized本质上是通过什么保证线程安全的？分三个方面回答：加锁和释放锁的原理，可重入原理，保证可见性原理。
+3. Synchronized由什么样的缺陷？Java Lock是怎么弥补这些缺陷的。
+4. Synchronized和Lock的对比，和选择？
+5. Synchronized在使用时有何注意事项？
+6. Synchronized修饰的方法在抛出异常时,会释放锁吗？
+7. 多个线程等待同一个snchronized锁的时候，JVM如何选择下一个获取锁的线程？
+8. Synchronized使得同时只有一个线程可以执行，性能比较差，有什么提升的方法？
+9. 我想更加灵活地控制锁的释放和获取(现在释放锁和获取锁的时机都被规定死了)，怎么办？
+10. 什么是锁的升级和降级？什么是JVM里的偏斜锁、轻量级锁、重量级锁？
+11. 不同的JDK中对Synchronized有何优化？
+### 关键字: volatile详解
 volatile关键字的作用是什么？
 volatile能保证原子性吗？
 之前32位机器上共享的long和double变量的为什么要用volatile？现在64位机器上是否也要设置呢？
@@ -127,7 +220,7 @@ i++为什么不能保证原子性？
 volatile是如何实现可见性的？内存屏障。
 volatile是如何实现有序性的？happens-before等
 说下volatile的应用场景？
-关键字: final详解
+### 关键字: final详解
 所有的final修饰的字段都是编译期常量吗？
 如何理解private所修饰的方法是隐式的final？
 说说final类型的类如何拓展？比如String是final类型，我们想写个MyString复用所有String中方法，同时增加一个新的toMyString()的方法，应该如何做？
