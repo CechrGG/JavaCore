@@ -17,7 +17,9 @@ public class ThreadState {
                         System.out.println(Thread.currentThread().getName() + "-7-" + Thread.currentThread().getState());
                         break;
                     } catch (InterruptedException e) {
+                        System.out.println(Thread.currentThread().getName() + "-e-" + Thread.currentThread().getState());
                         e.printStackTrace();
+                        break;
                     }
                 }
             }
@@ -35,6 +37,7 @@ public class ThreadState {
         }
         Thread.sleep(100);
         System.out.println(thread.getName() + "-6-" + thread.getState());
+//        thread.interrupt();
         Thread.sleep(4000);
         System.out.println(thread.getName() + "-8-" + thread.getState());
     }

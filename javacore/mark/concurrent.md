@@ -192,7 +192,7 @@
    - RUNNABLE 运行，包括ready和running
    - BLOCKED   阻塞
    - WAITING   等待
-   - TIME_WAITING 超时等待
+   - TIMED_WAITING 超时等待
    - TERMINATED   终止
    ```java
    public class ThreadState {
@@ -258,7 +258,7 @@
       ```java
       public class MyCallable implements Callable<String> {
          @Override
-         public String call() throws Exception {
+         public String call() {
             return "我是实现Callable接口的线程";
          }
       }
@@ -266,7 +266,7 @@
    >**分别创建线程**
      ```java
       public class ThreadTest {
-         public static void main(String[] args) throws ExecutionException, InterruptedException {
+         public static void main(String[] args) {
             MyThread myThread = new MyThread();
             MyRunnable myRunnable = new MyRunnable();
             Callable<String> myCallable = new MyCallable();
@@ -279,9 +279,37 @@
       }
       ```
 3. 基础线程机制有哪些？
+   - sleep  
+     TIMED_WAITING 阻塞不释放锁
+   - join   
+     WAITING 阻塞释放锁，本质还是wait
+   - yield  
+     主任务已完成，让出CPU等资源，切换给其他线程，不排除还是自己
+   - interrupt  
+      中断
+   - deamon    
+     守护线程，后台线程，不属于程序中不可或缺的部分
 4. 线程的中断方式有哪些？
+   - 自己设置标志位进行处理
+   - interrupt()  
+   设置中断标志位
+   - isInterrupted()    
+   获取中断标志，但不能清除
+   - interrupted()   
+   获取中断标志，并清除
+   - stop()、destroy()这些@Deprecated方法，现在已不推荐使用
 5. 线程的互斥同步方式有哪些？如何比较和选择？
+   > - 临界区（Critical Section）（统一进程内实现）  
+   >  通过对多线程的串行化来访问公共资源或一段代码，速度快，适合空值数据访问。   
+   > - 互斥量（Mutex）    
+   >  与临界区比较相似，只有拥有互斥对象的线程才具有访问资源的权限，需要资源更多。
+   > - 信号量（Semaphores）  
+   >  允许多个线程再同一时刻访问同一资源，但需要限制在同一时刻访问此资源的最大线程数目。
+   > - 事件（Event）  
+   >  通知线程有一些事件已发生，从而启动后继任务的开始。
 6. 线程之间有哪些协作方式？
+   > Object 对象的wait()、notify()、notifyAll()      
+   > Condition   await()、signal()、signalAll()
 ## 并发关键字：volatile，final，synchronized
 ### 关键字: synchronized详解
 1. Synchronized可以作用在哪里？分别通过对象锁和类锁进行举例。
