@@ -184,7 +184,7 @@
    > 并发：不同代码块交替执行，逻辑同时，同时是假象
    > 
    > 并行：不同代码块同时执行，物理同时
-
+   
 ##Java 并发 - 线程基础
 1. 线程有哪几种状态？分别说明从一种状态到另一种状态转变有哪些方式？
    ![JAVA线程状态](./image/thread-state.jpg)
@@ -194,7 +194,90 @@
    - WAITING   等待
    - TIME_WAITING 超时等待
    - TERMINATED   终止
-2. 通常线程有哪几种使用方式？
+   ```java
+   public class ThreadState {
+    private static final Object lock = new Object();
+
+    public static void main(String[] args) throws InterruptedException {
+        Thread thread = new Thread(()->{
+            System.out.println(Thread.currentThread().getName() + "-2-" + Thread.currentThread().getState());
+            synchronized (ThreadSafe.class) {
+                System.out.println(Thread.currentThread().getName() + "-4-" + Thread.currentThread().getState());
+            }
+            while (true) {
+                synchronized (lock) {
+                    try {
+                        lock.wait();
+                        Thread.sleep(3000);
+                        System.out.println(Thread.currentThread().getName() + "-7-" + Thread.currentThread().getState());
+                        break;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        System.out.println(thread.getName() + "-1-" + thread.getState());
+        thread.start();
+        synchronized (ThreadSafe.class) {
+            Thread.sleep(1000);
+            System.out.println(thread.getName() + "-3-" + thread.getState());
+        }
+        Thread.sleep(1000);
+        System.out.println(thread.getName() + "-5-" + thread.getState());
+        synchronized (lock) {
+            lock.notify();
+        }
+        Thread.sleep(100);
+        System.out.println(thread.getName() + "-6-" + thread.getState());
+        Thread.sleep(4000);
+        System.out.println(thread.getName() + "-8-" + thread.getState());
+    }
+   }
+   ```
+2. 通常线程有哪几种实现方式？
+   - 继承Thread
+     ```java
+      public class MyThread extends Thread{
+         @Override
+         public void run() {
+            System.out.println("我是继承Thread的线程");
+         }
+      }
+      ```
+   - 实现Runable接口
+     ```java
+      public class MyRunnable implements Runnable{
+         @Override
+         public void run() {
+            System.out.println("我是实现Runnable接口的线程");
+         }
+      }
+      ```
+   - 实现Callable接口
+      ```java
+      public class MyCallable implements Callable<String> {
+         @Override
+         public String call() throws Exception {
+            return "我是实现Callable接口的线程";
+         }
+      }
+      ```
+   >**分别创建线程**
+     ```java
+      public class ThreadTest {
+         public static void main(String[] args) throws ExecutionException, InterruptedException {
+            MyThread myThread = new MyThread();
+            MyRunnable myRunnable = new MyRunnable();
+            Callable<String> myCallable = new MyCallable();
+            FutureTask<String> task = new FutureTask<>(myCallable);
+            myThread.start();
+            new Thread(myRunnable).start();
+            new Thread(task).start();
+            System.out.println(task.get());
+         }
+      }
+      ```
 3. 基础线程机制有哪些？
 4. 线程的中断方式有哪些？
 5. 线程的互斥同步方式有哪些？如何比较和选择？
