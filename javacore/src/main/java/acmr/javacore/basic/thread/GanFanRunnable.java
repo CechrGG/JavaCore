@@ -29,7 +29,8 @@ public class GanFanRunnable implements Runnable{
                     Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                    System.out.println(e.getMessage());
+                    logger.error(e.getMessage());
+                    break;
                 }
 //            }
         }

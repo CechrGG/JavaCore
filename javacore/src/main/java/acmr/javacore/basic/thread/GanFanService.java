@@ -18,7 +18,7 @@ public class GanFanService {
         return instance;
     }
     public static Queue<String> fanQueue = new LinkedBlockingDeque<>(100);
-    public static Object lock = new Object();
+    public static final Object lock = new Object();
     public static int count = 0;
     private final ExecutorService fanThreadPool;
     private final ExecutorService ganFanThreadPool;

@@ -31,6 +31,7 @@ public class FanRunnable implements Runnable{
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                     logger.warn(e.getMessage());
+                    break;
                 }
             }
 //        }
