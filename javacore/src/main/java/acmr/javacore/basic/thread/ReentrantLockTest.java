@@ -1,48 +1,48 @@
 package acmr.javacore.basic.thread;
 
+import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ReentrantLockTest {
     private static final ReentrantLock lock = new ReentrantLock();
+    private static final Condition ganfan = lock.newCondition();
+    private static final Condition zuofan = lock.newCondition();
+    private static final LinkedList<String> fans= new LinkedList<>();
 
     public static void main(String[] args) {
         new Thread(() -> {
-            while (true) {
+            try {
+                TimeUnit.SECONDS.sleep(3);
                 lock.lock();
-                try {
-                    System.out.println(Thread.currentThread().getName() + "捡到锁了, 等等看");
-                    TimeUnit.SECONDS.sleep(3);
-                    System.out.println(Thread.currentThread().getName() + "等了这么半天也没人来");
-                    lock.unlock();
-                    System.out.println(Thread.currentThread().getName() + "谁爱要谁要");
-                    TimeUnit.SECONDS.sleep(3);
-                } catch (InterruptedException e) {
-                    System.out.println("糟了，" + Thread.currentThread().getName() + " 被打断了");
-                    e.printStackTrace();
-                    break;
-                }
+                System.out.println(Thread.currentThread().getName() + "没饭啊, 妈妈快给我做饭");
+                zuofan.signal();
+                ganfan.await();
+                System.out.println(Thread.currentThread().getName() + "哎妈呀，这" + fans.poll() + "真香");
+            } catch (InterruptedException e) {
+                System.out.println("糟了，" + Thread.currentThread().getName() + " 我要饿死了");
+                e.printStackTrace();
+            } finally {
+                lock.unlock();
             }
         }).start();
 
         new Thread(() -> {
+            lock.lock();
             try {
-                TimeUnit.SECONDS.sleep(4);
-                while (true) {
-                    if (lock.tryLock(1, TimeUnit.SECONDS)) {
-                        System.out.println(Thread.currentThread().getName() + "捡到锁了");
-                    }
-                    TimeUnit.SECONDS.sleep(2);
-                    System.out.println(Thread.currentThread().getName() + "等了这么半天也没人来");
-                    if (lock.isHeldByCurrentThread()) {
-                        lock.unlock();
-                        System.out.println(Thread.currentThread().getName() + "谁爱要谁要");
-                        TimeUnit.SECONDS.sleep(3);
-                    }
-                }
-            } catch (InterruptedException e) {
-                System.out.println("糟了，" + Thread.currentThread().getName() + "被打断了");
+                zuofan.await();
+                System.out.println(Thread.currentThread().getName() + "马上就来，别着急");
+                TimeUnit.SECONDS.sleep(3);
+                String fan = "红烧又";
+                fans.offer(fan);
+                System.out.println(fan + "做好了，快来干饭");
+                ganfan.signal();
+            } catch (Exception e) {
+                System.out.println("糟了，" + Thread.currentThread().getName() + "有大事发生，你还是泡面吃吧");
                 e.printStackTrace();
+            } finally {
+                lock.unlock();
             }
         }).start();
     }
