@@ -106,7 +106,7 @@
    > 2. 非阻塞同步
    >
    >     乐观并发策略， 操作和冲突检测放在一个指令集里
-   >- 测试并设置(Test And Set)
+   >     - 测试并设置(Test And Set)
    >     - 获取并增加(Fetch And Increment)
    >     - 交换(Swap)
    >     - **比较并交换(Compare And Swap)**
