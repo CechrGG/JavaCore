@@ -112,8 +112,8 @@
    >     - **比较并交换(Compare And Swap)**
    >     - 加载链接/条件存储(Load Linked/Store Conditional)
    >> CAS需要三个参数（V,A,B）,其中V是内存地址，A是旧值，B是新值，
-   > > 当且仅当V符合A时，才将B更新到V,这是一个原子操作。
-   > > 如 AtomicInteger的自增操作
+   >> 当且仅当V符合A时，才将B更新到V,这是一个原子操作。
+   >> 如 AtomicInteger的自增操作
    ```java
    public class FutureTest {
       private static final AtomicInteger count = new AtomicInteger(0);

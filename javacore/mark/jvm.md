@@ -10,6 +10,7 @@
 ## 2 JVM体系结构
     
 ![JVM详细体系结构](./image/JVM体系结构.png)
+![JVM](./image/jvm.png)
 
 >简要示意       
 
@@ -34,7 +35,7 @@
   > - 指向当前线程所执行的字节码行号      
   > - JVM进行多线程调度，当CPU暂停运行当前线程把时间片让给其他线程时，就需要PC寄存器记录当前执行的位置
   > 当其再次抢占CPU资源时便从纪录位置开始执行，因此它是线程私有的    
-  > - 如果是native方法则为**NULL**
+  > - 如果是native方法则为**undefined**
 - 2.2.2 VM Stack(虚拟机栈)
   > - 线程私有的，生命周期与线程同步
   > - 每个Java方法在被调用的时候都会创建一个栈帧，并入栈；完成调用则出站，所有栈帧出栈后，线程也就完成了使命
@@ -79,6 +80,51 @@
   > - 每个线程都有一个私有的本地内存(local memory)，本地内存中存储了该线程可以读写共享变量的副本。
   > - 线程之间的共享变量存储在主内存(main memory)
 ## 4 GC(Garbage Collection,垃圾回收)
-  
+  > GC可以理解为追踪仍然使用的所有对象，并将其余对象标记为垃圾然后进行回收。
+  > 主要包括以下几个方面
+  > - GC对象引用判断策略
+  > - GC收集算法
+  > - GC收集器
+## 4.1 GC判断策略
+  1. Java 中的引用
+     > - **强引用**：最普遍的，就是将一个对象赋给一个应用变量。
+     > 如：String string = new String("string");
+     > 只用引用变量存在，就永远不能被回收，也是造成OOM的主因。
+     > - **软引用**：内存空间足够时不回收，内存不足则回收，用于实现内存敏感的高速缓存。
+     ```java
+        public class ReferenceTest {
+            public static void main(String[] args) {
+                Object object = new Object();
+                SoftReference<Object> ref = new SoftReference<>(object);
+                System.out.println(object);
+                System.out.println(ref);
+                System.out.println(ref.get());
+                object = null;
+                System.out.println(ref.get());
+                System.gc();
+                System.out.println(object);
+                System.out.println(ref.get());
+                System.out.println(ref);
+            }
+        }
+     ```
+     > - **弱引用**：不管内存空间是否足够，都会回收，可将上面的代码换成WeakReference对比
+     > - **虚引用**: 不会决定对象的生命周期，一个对象持有虚引用，就跟没有引用查不多，不能通过它访问引用的对象。     
+     需要配合引用队列使用，用于GC监听，跟踪垃圾回收过程。
+     
+  2. 引用计数算法
+     > 给对象添加一个引用计数器，每当有其他变量引用它时，计数器就加1；引用失效时，计数器就减1；  
+     > 任何计数器为0的对象都可以被当做垃圾收集。当一个对象被收集时，它引用的任何对象计数减1。   
+     > - **优点**：实现简单，效率高
+     > - **缺点**：无法检测循环引用，可能导致内存泄漏
+  3. 可达性分析算法
+     > 主流方法，基本思路就是通过一系列“GC Roots"的对象作为起点，从这些节点开始向下搜索， 
+     > 到达叶子节点走过的路径称为引用链，当一个对象到GC Roots没有任何引用链时，则证明此对象不可达。   
+     Java 中的GC Roots 包括：
+     > - 虚拟机栈（准确的说是栈帧中的本地变量表）中引用的对象
+     > - 方法区中类静态属性引用的对象
+     > - 方法区中常量引用的对象
+     > - 本地方法栈中引用的对象
+    
 ## 5 JVM 调优
   
