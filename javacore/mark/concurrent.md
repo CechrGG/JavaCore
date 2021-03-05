@@ -1,5 +1,5 @@
 #Java 并发 - 知识体系
-![java 并发](./image/concurrent.png)
+![java 并发](image/concurrent/concurrent.png)
 ##Java 并发 - 理论基础
 1. 多线程的出现是要解决什么问题的? 
    - 提高资源利用率，充分利用CPU空闲时间片
@@ -187,7 +187,7 @@
    
 ##Java 并发 - 线程基础
 1. 线程有哪几种状态？分别说明从一种状态到另一种状态转变有哪些方式？
-   ![JAVA线程状态](./image/thread-state.jpg)
+   ![JAVA线程状态](image/concurrent/thread-state.jpg)
    - NEW 初始状态
    - RUNNABLE 运行，包括ready和running
    - BLOCKED   阻塞
@@ -388,7 +388,7 @@ final方法可以被重载吗？可以
 #J.U.C框架
 #Lock框架和Tools类
 ###类结构总览
-![juc](./image/juc.png)
+![juc](image/concurrent/juc.png)
 ####接口: Condition
 
 Condition为接口类型，它将 Object 监视器方法(wait、notify 和 notifyAll)分解成截然不同的对象，以便通过将这些对象与任意 Lock 实现组合使用，为每个对象提供多个等待 set (wait-set)。其中，Lock 替代了 synchronized 方法和语句的使用，Condition 替代了 Object 监视器方法的使用。可以通过await(),signal()来休眠/唤醒线程。

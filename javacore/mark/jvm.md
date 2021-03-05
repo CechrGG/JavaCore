@@ -5,16 +5,16 @@
 > 解释成具体操作系统平台机器指令则通通交给JVM处理，这样就使得Java能够“一次编译，到处运行”了。        
 > Java 程序的具体执行过程如下图
 
-![Java执行过程](./image/java-run.jpg)
+![Java执行过程](image/jvm/java-run.jpg)
 
 ## 2 JVM体系结构
     
-![JVM详细体系结构](./image/JVM体系结构.png)
-![JVM](./image/jvm.png)
+![JVM详细体系结构](image/jvm/JVM体系结构.png)
+![JVM](image/jvm/jvm.png)
 
 >简要示意       
 
-![JVM体系结构](./image/JVM.jpg)
+![JVM体系结构](image/jvm/JVM.jpg)
 
 ###2.1 类加载器
 > - 负责加载class文件到运行时数据区，不管其是否可以运行
@@ -25,11 +25,11 @@
 >> 
 >> 采用双亲委派的一个好处就是比如加载位于rt.jar包中的类java.lang.Object，不管是哪个加载器加载这个类，最终都是会委托给顶层的启动类加载器进行加载，这样就保证了使用不同的类加载器最终
 >> 得到的都是同一个Object对象。
-> ![双亲委派](./image/双亲委派.png)
+> ![双亲委派](image/jvm/双亲委派.png)
 > - 沙箱安全机制
 >> 通过双亲委派机制，类的加载永远都是从 启动类加载器开始，依次下放，保证你所写的代码，不会污染Java自带的源代码，所以出现了双亲委派机制，保证了沙箱安全
 ###2.2 运行时数据区
-![runtime-data-areas](./image/runtime-data.png)
+![runtime-data-areas](image/jvm/runtime-data.png)
 
 - 2.2.1 Program Counter Register(程序计数器,PC寄存器)
   > - 指向当前线程所执行的字节码行号      
@@ -40,7 +40,7 @@
   > - 线程私有的，生命周期与线程同步
   > - 每个Java方法在被调用的时候都会创建一个栈帧，并入栈；完成调用则出站，所有栈帧出栈后，线程也就完成了使命
   > - 栈帧
-      ![vm-stack](./image/vm-stack.jpg)
+      ![vm-stack](image/jvm/vm-stack.jpg)
   > 1. 局部变量表：基本数据类型，对象引用（局部变量，不包含成员变量；调用的是存在堆中的对象；所需内存在编译期已经确定，运行时不会在更改）。
   > 2. 操作数栈：存储方法参数和运算操作后的结果。
   > 3. 动态链接：每个栈帧都包含一个指向运行时常量池中该栈帧所属方法的引用，持有这个引用是为了支持方法调用过程中的动态链接。   
@@ -55,7 +55,7 @@
   > - GC工作的主要区域
   > - 1.7后字符串常量池从永久代中剥离，放入堆中  
   > 下图是堆内存结构
-  ![jvm-heap](./image/jvm-heap.png)
+  ![jvm-heap](image/jvm/jvm-heap.png)
   > 分为年轻代（Young Generation）和老年代（Old Generation）；  
   > 年轻代又分为伊甸园（Eden）和幸存区（Survivor区）；幸存区又分为From Survivor空间和 To Survivor空间。  
   > 年轻代存储“新生对象”，我们新创建的对象存储在年轻代中。当年轻内存占满后，会触发Minor GC，清理年轻代内存空间。   
@@ -73,7 +73,7 @@
   > 执行引擎也就是执行一条条代码的一个流程，代码都包含在方法体中，执行引擎本质上就是执行一个个方法串起来的流程，  
   > 对应于操作系统的一个线程，每个java线程就是一个执行引擎的实例
 ## 3 JMM Java内存模型
-  ![jmm](./image/jmm.png)
+  ![jmm](image/jvm/jmm.png)
   > JMM(Java Memory Model,Java 内存模型)，是一种抽象概念，描述了一组规则或规范，  
   > 通过这组规范定义了程序中各变量的访问方式，决定了一个线程对共享变脸的写入何时对另一个线程可见。  
   > JMM定义了线程和主内存之间的抽象关系：
@@ -152,7 +152,7 @@
   >     2. 当Eden区满后，会触发Minor GC,回收新生代，非常频繁，回收速度也较快
   >     3. 当老年代满后，则触发Full GC, 经常会伴随至少一次Minor GC,但并非绝对，Full GC速度一般会比Minor GC慢10倍以上
 ### 4.3 HotSpot GC 收集器
-![jvm-gc](./image/jvm-gc.png)
+![jvm-gc](image/jvm/jvm-gc.png)     
 *有连线的表示可搭配使用*
 > - **Serial(串行)**  
 > 1.3.1之前是新生代GC唯一选择 
