@@ -46,6 +46,8 @@ Map 主要接口、类
 |default Stream<E>|parallelStream()|创建一个可并行的分割器流|
 |Object[]|toArray()|转换为对象数组|
 |\<T\> T[]|toArray(T[] a)|转换为指定类型的对象数组|
+
 *以上仅做简单描述，详细描述可见源码*
+### 2.3 List接口
 
 
