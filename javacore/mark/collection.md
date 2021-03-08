@@ -23,7 +23,9 @@ Map 主要接口、类
 > 另外1.8之后还实现了两个默认方法用于Stream()
 > > Iterator接口核心方法：hasNext()、next()、remove()
 ### 2.2 Collection接口
-> Collection 接口继承了Iterable, 包括以下方法：
+> Collection 接口继承了Iterable, 三个子接口如图
+> ![list-set-queue](./image/collection/list-set-queue.png)
+> 包括以下自有方法：
 
 |return|method|description|
 |----|----|----|
@@ -35,7 +37,6 @@ Map 主要接口、类
 |boolean|equals(Object o)|判断集合是否相等|
 |int|hashCode()|返回此集合的hash code|
 |boolean|isEmpty()|判断集合是否包含元素|
-|Iterator\<E\>|iterator()|获取迭代器，继承自Iterable接口|
 |boolean|remove(Object o)|删除集合中此元素（如果存在）|
 |boolean|removeAll(Collection<?> c)|删除指定集合中包含的所有此集合的元素|
 |default boolean|removeIf(Predicate<? super E> filter)|删除满足过滤条件的元素|
@@ -49,5 +50,42 @@ Map 主要接口、类
 
 *以上仅做简单描述，详细描述可见源码*
 ### 2.3 List接口
+> List 接口继承了Collection，包括以下自有方法：
+
+|return|method|description|
+|----|----|----|
+|void|add(int index, E element)|添加一个指定位置的元素,0<=index<=size|
+|E|set(int index, E element)|替换一个指定位置的元素,返回之前的元素|
+|boolean|addAll(int index, Collection<? extends E> c)|添加到指定位置的集合中的所有元素,0<=index<=size|
+|E|get(int index)|获取指定位置的元素|
+|int|indexOf(Object o)|包含此元素则返回第一个该元素的位置，否则为-1|
+|int|lastIndexOf(Object o)|包含此元素则返回倒数第一个该元素的位置，否则为-1|
+|ListIterator<E>|listIterator()|返回列表迭代器，ListIterator继承了Iterator|
+|ListIterator<E>|listIterator(int index)|返回从指定位置开始的列表迭代器|
+|E|remove(int index)|删除指定位置的元素|
+|default void|replaceAll(UnaryOperator<E> operator)|将元素替换为满足指定操作符操作的结果|
+|default void|sort(Comparator<? super E> c)|将元素按照指定比较规则进行排序|
+|List\<E\>|subList(int fromIndex, int toIndex)|返回指定位置段的元素|
+
+*以上仅做简单描述，详细描述可见源码*
+> List的常用的实现为ArrayList、Vector、LinkedList
+> ![list](./image/collection/list.png)
+### 2.3.1 ArrayList
+
+
+### 2.4 Set 接口
+> Set 继承了Collection，没有自己独有的方法，与Collection一样
+### 2.5 Queue 接口
+> Queue 继承了Collection, 独有的方法包括：
+
+|return|method|description|
+|----|----|----|
+|boolean|offer(E e)|添加一个元素到队列尾部|
+|E|element()|获取队列头部的元素，但不删除该元素，如果队列为空则抛出异常|
+|E|peek()|获取队列头部的元素，但不删除该元素，如果队列为空则返回null|
+|E|poll()|获取队列头部的元素，且删除该元素，如果队列为空则返回null|
+|E|remove()|获取队列头部的元素，且删除该元素，如果队列为空则抛出异常|
+
+*以上仅做简单描述，详细描述可见源码*
 
 
