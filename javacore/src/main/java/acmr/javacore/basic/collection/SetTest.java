@@ -1,5 +1,8 @@
 package acmr.javacore.basic.collection;
 
+import acmr.javacore.basic.oop.Human;
+import acmr.javacore.basic.oop.HumanImpl;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,6 +10,18 @@ import java.util.Set;
 public class SetTest {
     public static void main(String[] args) {
         Set set = new HashSet();
+        String str1 = new String("string1");
+        String str2 = new String("string1");
+        System.out.println(str1.hashCode());
+        System.out.println(str2.hashCode());
+        Human gg = new HumanImpl();
+        Human qq = new HumanImpl();
+        System.out.println(gg.hashCode());
+        System.out.println(qq.hashCode());
+        set.add(gg);
+        set.add(qq);
+        set.add(str1);
+        set.add(str2);
         set.add(null);
         set.add("abc");
         set.add("null");

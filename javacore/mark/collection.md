@@ -23,8 +23,8 @@ Map 主要接口、类
 > 另外1.8之后还实现了两个默认方法用于Stream()
 > > Iterator接口核心方法：hasNext()、next()、remove()
 ### 2.2 Collection接口
-> Collection 接口继承了Iterable, 三个子接口如图
-> ![list-set-queue](./image/collection/list-set-queue.png)
+> Collection 接口继承了Iterable, 三个子接口如图     
+> ![list-set-queue](./image/collection/list-set-queue.png)   
 > 包括以下自有方法：
 
 |return|method|description|
@@ -68,13 +68,85 @@ Map 主要接口、类
 |List\<E\>|subList(int fromIndex, int toIndex)|返回指定位置段的元素|
 
 *以上仅做简单描述，详细描述可见源码*
-> List的常用的实现为ArrayList、Vector、LinkedList
+> List的常用的实现为ArrayList、Vector、LinkedList    
 > ![list](./image/collection/list.png)
 ### 2.3.1 ArrayList
+> 底层原理是数组，查询快，增删慢，线程不安全     
+``` java
+    /**
+     * Default initial capacity. 默认初始化数组长度
+     */
+    private static final int DEFAULT_CAPACITY = 10;
+```
+> 核心方法，扩容   
+``` java 
 
+    /**
+     * Increases the capacity to ensure that it can hold at least the
+     * number of elements specified by the minimum capacity argument.
+     *
+     * @param minCapacity the desired minimum capacity
+     */
+    private void grow(int minCapacity) {
+        // overflow-conscious code
+        int oldCapacity = elementData.length;
+        //这里相当于默认扩容1.5倍
+        int newCapacity = oldCapacity + (oldCapacity >> 1);
+        if (newCapacity - minCapacity < 0)
+            newCapacity = minCapacity;
+        if (newCapacity - MAX_ARRAY_SIZE > 0)
+            newCapacity = hugeCapacity(minCapacity);
+        // minCapacity is usually close to size, so this is a win:
+        elementData = Arrays.copyOf(elementData, newCapacity);
+    }
+```
+### 2.3.2 Vector
+> * 通过方法声明添加synchronized来实现线程安全，其他跟ArrayList没太大区别
+> * 初始容量也为10，扩容默认为2倍而ArrayList是1.5倍
+> * 增加了一些自己的方法，包括addElement()、elementAt()、removeElement()等
+> * Stack 栈继承了Vector
+
+### 2.3.3 LinkedList
+> 底层实现原理是链表, 因此增删快，查询慢     
+``` java
+    private static class Node<E> {
+        E item;
+        Node<E> next;
+        Node<E> prev;
+
+        Node(Node<E> prev, E element, Node<E> next) {
+            this.item = element;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+    
+    //查询的方法，离头部近则从头部顺序查找，离尾部近则从尾部倒序查找
+    
+    /**
+     * Returns the (non-null) Node at the specified element index.
+     */
+    Node<E> node(int index) {
+        // assert isElementIndex(index);
+
+        if (index < (size >> 1)) {
+            Node<E> x = first;
+            for (int i = 0; i < index; i++)
+                x = x.next;
+            return x;
+        } else {
+            Node<E> x = last;
+            for (int i = size - 1; i > index; i--)
+                x = x.prev;
+            return x;
+        }
+    }
+```
+> 同时也实现了Queue接口，可以当队列使用，但是线程不安全
 
 ### 2.4 Set 接口
-> Set 继承了Collection，没有自己独有的方法，与Collection一样
+> Set 继承了Collection，没有自己独有的方法，与Collection一样 
+
 ### 2.5 Queue 接口
 > Queue 继承了Collection, 独有的方法包括：
 
