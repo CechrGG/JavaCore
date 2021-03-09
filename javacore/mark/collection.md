@@ -1,10 +1,10 @@
-# JAVA Collection(集合框架)
+# Java Collection(集合框架)
 ## 1 概述
 > 用于动态存放对象的容器   
 > 解决数组不能满足的需求：
 > * 长度可变
 > * 不同类型
-> > *注意：集合只能存放引用类型，而数组是可以存放基本类型和引用类型，但是类型必须统一*  
+> > *注意：集合只能存放引用，但类型可以不同，而数组是可以存放基本数据类型和引用，但是类型必须统一*  
 
 Collection 集合主要接口、类
 
@@ -146,6 +146,7 @@ Map 主要接口、类
 
 ### 2.4 Set 接口
 > Set 继承了Collection，没有自己独有的方法，与Collection一样 
+> 常用的实现类为HashSet、TreeSet、LinkedHashSet
 
 ### 2.5 Queue 接口
 > Queue 继承了Collection, 独有的方法包括：

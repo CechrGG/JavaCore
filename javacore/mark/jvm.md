@@ -5,7 +5,7 @@
 > 解释成具体操作系统平台机器指令则通通交给JVM处理，这样就使得Java能够“一次编译，到处运行”了。        
 > Java 程序的具体执行过程如下图
 
-![Java执行过程](image/jvm/java-run.jpg)
+![Java执行过程](image/jvm/java-run.png)
 
 ## 2 JVM体系结构
     
