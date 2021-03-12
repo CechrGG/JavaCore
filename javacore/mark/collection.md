@@ -8,8 +8,7 @@
 
 Collection 集合主要接口、类
 
-![collection](image/collection/collection.png)  
-*图片中的顶层接口错了，应该是Iterable而非Iterator*
+![collection](image/collection/collection.png)
 
 Map 主要接口、类
 
@@ -146,7 +145,8 @@ Map 主要接口、类
 
 ### 2.4 Set 接口
 > Set 继承了Collection，没有自己独有的方法，与Collection一样 
-> 常用的实现类为HashSet、TreeSet、LinkedHashSet
+> 常用的实现类为HashSet、TreeSet、LinkedHashSet、EnumSet  
+> EnumSet用于存储枚举对象元素，其它的实现原理都是直接用对应的Map, 因此可详见Map部分
 
 ### 2.5 Queue 接口
 > Queue 继承了Collection, 独有的方法包括：
@@ -160,5 +160,15 @@ Map 主要接口、类
 |E|remove()|获取队列头部的元素，且删除该元素，如果队列为空则抛出异常|
 
 *以上仅做简单描述，详细描述可见源码*
+
+> 主要的几个接口和实现类 
+
+![queue](./image/collection/Queue.png)
+
+### 2.5.1 非阻塞队列 
+1. LinkedList
+2. PriorityQueue
+3. ConcurrentLinkedQueue
+### 2.5.2 阻塞队列
 
 
