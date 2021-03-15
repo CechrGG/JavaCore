@@ -165,6 +165,10 @@ Map 主要接口、类
 
 ![queue](./image/collection/Queue.png)
 
+> Deque 是双端队列，基本上就是在Queue的基础上增加头尾操作，源码解释为： 
+> > A linear collection that supports element insertion and removal at both ends. 
+> > The name deque is short for "double ended queue" and is usually pronounced "deck"
+
 ### 2.5.1 非阻塞队列 
 1. LinkedList
 2. PriorityQueue
