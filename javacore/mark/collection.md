@@ -23,7 +23,9 @@ Map 主要接口、类
 > > Iterator接口核心方法：hasNext()、next()、remove()
 ### 2.2 Collection接口
 > Collection 接口继承了Iterable, 三个子接口如图     
-> ![list-set-queue](./image/collection/list-set-queue.png)   
+> 
+![list-set-queue](./image/collection/list-set-queue.png)   
+*Queue虽然元素可为空，但最好不要这样做，因为poll、peek通常都有null判断*
 > 包括以下自有方法：
 
 |return|method|description|
@@ -71,15 +73,14 @@ Map 主要接口、类
 > ![list](./image/collection/list.png)
 ### 2.3.1 ArrayList
 > 底层原理是数组，查询快，增删慢，线程不安全     
-``` java
+```java
     /**
      * Default initial capacity. 默认初始化数组长度
      */
     private static final int DEFAULT_CAPACITY = 10;
 ```
 > 核心方法，扩容   
-``` java 
-
+```java 
     /**
      * Increases the capacity to ensure that it can hold at least the
      * number of elements specified by the minimum capacity argument.
@@ -107,7 +108,7 @@ Map 主要接口、类
 
 ### 2.3.3 LinkedList
 > 底层实现原理是链表, 因此增删快，查询慢     
-``` java
+```java
     private static class Node<E> {
         E item;
         Node<E> next;
