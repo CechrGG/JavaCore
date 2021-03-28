@@ -172,8 +172,79 @@ Map 主要接口、类
 
 ### 2.5.1 非阻塞队列 
 1. LinkedList
+```java
+public class QueueTest {
+    public static void main(String[] args) {
+        Queue<Rat> queue = new LinkedList<>();
+        new Thread(()->{
+            while (true) {
+                queue.offer(new Rat());
+                System.out.println("洞里又出来一只耗子，屋里现在有" + queue.size() + "只");
+                try {
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        new Thread(()->{
+            while (true) {
+                Rat rat = queue.poll();
+                if(rat == null) {
+                    System.out.println("耗子在哪儿");
+                } else {
+                    System.out.println("抓到一只耗子");
+                }
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+//        queue.forEach((e)->System.out.println(e));
+    }
+}
+```
 2. PriorityQueue
+> 优先级队列，根据元素的优先级设定（实现Comparable或者Comparator)进行排序        
+> 底层实现原理是数组，儿叉小顶堆   
+> 无界，线程不安全的
+```java
+public class PriorityQueueTest {
+    public static void main(String[] args) {
+        PriorityQueue<Rat> ratQue = new PriorityQueue<>(Comparator.comparing(Rat::getWeight));
+        for(int i = 0; i < 10; i++) {
+            Rat rat = new Rat();
+            rat.setName("耗子" + i + "号");
+            rat.setWeight(BigDecimal.valueOf(10 - i + Math.random()).setScale(2, BigDecimal.ROUND_HALF_UP));
+            ratQue.offer(rat);
+        }
+        while (!ratQue.isEmpty()) {
+            Rat rat = ratQue.poll();
+            System.out.println(rat.getName() + "-" + rat.getWeight());
+        }
+    }
+
+}
+```
 3. ConcurrentLinkedQueue
+> 并发链表队列，CAS原理来实现入列和出列的线程安全，但不能保证遍历安全   
+> 不能添加null元素
 ### 2.5.2 阻塞队列
+> BlockingQueue 主要针对并发情境下以阻塞方式实现安全高效队列，继承于Queue,独有方法包括：、
+
+|return|method|description|
+|----|----|----|
+|void|put(E e)|添加一个元素到队列,如果没有足够空间则等待|
+|boolean|offer(E e, long timeout, TimeUnit unit)|添加一个元素到队列,如果没有足够空间则等待给定的时间|
+|E|take()|获取队列元素，且删除该元素，如果元素不可用则等待|
+|E|poll(long timeout, TimeUnit unit)|获取队列的元素，且删除该元素，如果元素不可用则等待给定时间|
+|int|remainingCapacity()|获取队列不阻塞情况下可接受的元素数量，如果没有限制则返回最大整数|
+|int|drainTo(Collection<? super E> c)|删除队列所有元素，并添加到指定集合中|
+|int|drainTo(Collection<? super E> c, int maxElements)|删除队列指定最大个数的元素，并添加到指定集合中|
+
 
 

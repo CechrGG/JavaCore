@@ -1,6 +1,6 @@
-#Java 并发 - 知识体系
+# Java 并发 - 知识体系
 ![java 并发](image/concurrent/concurrent.png)
-##Java 并发 - 理论基础
+## Java 并发 - 理论基础
 1. 多线程的出现是要解决什么问题的? 
    - 提高资源利用率，充分利用CPU空闲时间片
    - 分解任务，提高工作效率
@@ -185,7 +185,7 @@
    > 
    > 并行：不同代码块同时执行，物理同时
    
-##Java 并发 - 线程基础
+## Java 并发 - 线程基础
 1. 线程有哪几种状态？分别说明从一种状态到另一种状态转变有哪些方式？
    ![JAVA线程状态](image/concurrent/thread-state.jpg)
    - NEW 初始状态
@@ -385,9 +385,9 @@ final方法可以被重载吗？可以
 说说final的原理？
 使用 final 的限制条件和局限性？
 看本文最后的一个思考题
-#J.U.C框架
-#Lock框架和Tools类
-###类结构总览
+# J.U.C框架
+# Lock框架和Tools类
+### 类结构总览
 ![juc](image/concurrent/juc.png)
 ####接口: Condition
 

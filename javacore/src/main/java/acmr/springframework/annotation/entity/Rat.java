@@ -3,10 +3,11 @@ package acmr.springframework.annotation.entity;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Date;
 
 @Component("rat")
-public class Rat {
+public class Rat implements Comparable<Rat> {
     private long id;
     private String name;
     private char sex;
@@ -120,5 +121,10 @@ public class Rat {
 
     public void setGmt_update(Date gmt_update) {
         this.gmt_update = gmt_update;
+    }
+
+    @Override
+    public int compareTo(Rat o) {
+        return weight.compareTo(o.weight);
     }
 }
