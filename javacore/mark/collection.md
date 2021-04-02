@@ -210,11 +210,12 @@ public class QueueTest {
 ```
 2. PriorityQueue
 > 优先级队列，根据元素的优先级设定（实现Comparable或者Comparator)进行排序        
-> 底层实现原理是数组，儿叉小顶堆   
+> 底层实现原理是数组，二叉小顶堆   
 > 无界，线程不安全的
 ```java
 public class PriorityQueueTest {
     public static void main(String[] args) {
+        //根据耗子体重进行排序的队列
         PriorityQueue<Rat> ratQue = new PriorityQueue<>(Comparator.comparing(Rat::getWeight));
         for(int i = 0; i < 10; i++) {
             Rat rat = new Rat();
@@ -234,7 +235,7 @@ public class PriorityQueueTest {
 > 并发链表队列，CAS原理来实现入列和出列的线程安全，但不能保证遍历安全   
 > 不能添加null元素
 ### 2.5.2 阻塞队列
-> BlockingQueue 主要针对并发情境下以阻塞方式实现安全高效队列，继承于Queue,独有方法包括：、
+> BlockingQueue 主要针对并发情境下以阻塞方式实现安全高效队列，继承于Queue,独有方法包括：
 
 |return|method|description|
 |----|----|----|
@@ -246,5 +247,348 @@ public class PriorityQueueTest {
 |int|drainTo(Collection<? super E> c)|删除队列所有元素，并添加到指定集合中|
 |int|drainTo(Collection<? super E> c, int maxElements)|删除队列指定最大个数的元素，并添加到指定集合中|
 
+> 下面通过几个常用的实现类来深入理解 
+1. ArrayBlockingQueue
+> 数组实现的有界阻塞FIFO队列，主要属性
+```java
+    /** The queued items */
+    /** 元素数组，底层数据结构 */
+    final Object[] items;
 
+    /** items index for next take, poll, peek or remove */
+    /** 下一个可获取或者删除的元素索引 */
+    int takeIndex;
+
+    /** items index for next put, offer, or add */
+    /** 下一个可添加元素的索引 */
+    int putIndex;
+
+    /** Number of elements in the queue */
+    /** 队列中的元素个数 */
+    int count;
+
+    /*
+     * Concurrency control uses the classic two-condition algorithm
+     * found in any textbook.
+     */
+
+    /** Main lock guarding all access */
+    /** 保证所有访问安全的独占锁 */
+    final ReentrantLock lock;
+
+    /** Condition for waiting takes */
+    /** 等待获取条件，非空，即如果不为空即可获取 */
+    private final Condition notEmpty;
+
+    /** Condition for waiting puts */
+    /** 等待添加条件，不满，即如果队列不满即可插入 */
+    private final Condition notFull;
+
+    /**
+     * Shared state for currently active iterators, or null if there
+     * are known not to be any.  Allows queue operations to update
+     * iterator state. 迭代器
+     */
+    transient Itrs itrs = null;
+```
+> 构造方法 
+```java
+    /** capacity 即构造数组items[]的容量
+     *  默认fair=false进行构造
+     */
+    public ArrayBlockingQueue(int capacity) {
+        this(capacity, false);
+    }
+    /** 
+     *  fair 重入锁的安全策略参数，true则保证公平（FIFO）;false则不保证
+     */
+    public ArrayBlockingQueue(int capacity, boolean fair) {
+        if (capacity <= 0)
+            throw new IllegalArgumentException();
+        this.items = new Object[capacity];
+        lock = new ReentrantLock(fair);
+        notEmpty = lock.newCondition();
+        notFull =  lock.newCondition();
+    }
+    /**
+     *  c 初始化对象集合到队列中， 元素不能为空，数量不能超过队列容量，否则均抛出异常
+     */
+    public ArrayBlockingQueue(int capacity, boolean fair, Collection<? extends E> c) {
+        this(capacity, fair);
+        final ReentrantLock lock = this.lock;
+        lock.lock(); // 保证可见性，而非互斥操作
+        try {
+            int i = 0;
+            try {
+                for (E e : c) {
+                    checkNotNull(e);
+                    items[i++] = e;
+                }
+            } catch (ArrayIndexOutOfBoundsException ex) {
+                throw new IllegalArgumentException();
+            }
+            count = i;
+            putIndex = (i == capacity) ? 0 : i;
+        } finally {
+            lock.unlock();
+        }
+
+    }
+```
+> 插入操作  
+> add直接调用offer,offer是非阻塞的，如果队列满了直接返回，而put操作是阻塞的
+```java
+    public boolean offer(E e) {
+        checkNotNull(e);
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            if (count == items.length)  //队列已满，直接返回
+                return false;
+            else {
+                enqueue(e); //入列
+                return true;
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+    
+    //入列方法
+    private void enqueue(E x) {
+        // assert lock.getHoldCount() == 1;
+        // assert items[putIndex] == null;
+        final Object[] items = this.items;
+        items[putIndex] = x;
+        if (++putIndex == items.length) //添加之后入列索引已到最大值，则重置为0
+            putIndex = 0;
+        count++;    //队列元素个数
+        notEmpty.signal();  //有元素入列，队列非空信号，消费线程可以继续了
+    }
+            
+    public void put(E e) throws InterruptedException {
+        checkNotNull(e);
+        final ReentrantLock lock = this.lock;
+        lock.lockInterruptibly();   //可响应中断
+        try {
+            while (count == items.length)
+                notFull.await();    //队列已满，等待释放锁，暂时不能插入
+            enqueue(e);
+        } finally {
+            lock.unlock();
+        }
+    }
+```
+> 获取和删除操作   
+> poll、peek均是非阻塞的，take是阻塞的
+```java
+    public E poll() {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            return (count == 0) ? null : dequeue(); //队列为空直接返回null不阻塞，否则出列
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    //出列操作
+    private E dequeue() {
+        // assert lock.getHoldCount() == 1;
+        // assert items[takeIndex] != null;
+        final Object[] items = this.items;
+        @SuppressWarnings("unchecked")
+        E x = (E) items[takeIndex];
+        items[takeIndex] = null;
+        if (++takeIndex == items.length)
+            takeIndex = 0;  //如果出列索引到队列最大值，则重置为0
+        count--;
+        if (itrs != null)
+            itrs.elementDequeued(); //更新迭代器中的元素
+        notFull.signal();   //有元素出列，不满消息信号，生产线程可以继续了
+        return x;
+    }
+
+    public E peek() {
+        final ReentrantLock lock = this.lock;
+        lock.lock();
+        try {
+            return itemAt(takeIndex); // null when queue is empty
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public E take() throws InterruptedException {
+        final ReentrantLock lock = this.lock;
+        lock.lockInterruptibly();
+        try {
+            while (count == 0)  //如果队列为空，则阻塞等待并释放锁，直到非空信号
+                notEmpty.await();
+            return dequeue();
+        } finally {
+            lock.unlock();
+        }
+    }
+```
+> 可以看出，既然用了BlockingQueue就使用其独有的方法，符合其阻塞的特性，否则只能当线程安全的普通队列使用     
+> 简单的测试实例, 可以调节耗子工厂和猫的数量来观察线程等待状态       
+> 可以印证，如果是公平等待的话生产者或或者消费者的等待时间会达到平衡，并按等待顺序唤醒
+```java
+public class ArrayBlockingQueueTest {
+//    private final ArrayBlockingQueue<Rat> ratQue = new ArrayBlockingQueue<>(5);   
+    private final ArrayBlockingQueue<Rat> ratQue = new ArrayBlockingQueue<>(5, true);  //公平等待，FIFO
+    private boolean stop = false;
+    //耗子工厂
+    private class RatFactory extends Thread {
+        @Override
+        public void run() {
+            String id = Thread.currentThread().getName();
+            int count = 0;
+            System.out.println("耗子生产工厂--" + id + "--开工了");
+            while (!stop) {
+                Rat rat = SpringAtUtil.getBean("rat");
+                rat.setName("耗子[" + id + "]-" + count++ + "号");
+                try {
+                    System.out.println(rat.getName() + "长大了");
+                    long begin = System.currentTimeMillis();
+                    ratQue.put(rat);
+                    long end = System.currentTimeMillis();
+                    long waitTime = (end - begin) / 1000;
+                    System.out.println(rat.getName() + "等了" + waitTime + "秒终于出洞了，现在屋里有" + ratQue.size() + "只耗子");
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    //开始猫鼠游戏
+    public void startCatAndRat(int ratCount, int catCount) {
+        for(int i = 0; i < ratCount; i++) {
+            new RatFactory().start();
+        }
+        for(int i = 0; i < catCount; i++) {
+            new CatGo().start();
+        }
+    }
+    public void stop() {
+        stop = true;
+    }
+    //喵星人还是有所作为
+    private class CatGo extends Thread {
+        @Override
+        public void run() {
+            String id = Thread.currentThread().getName();
+            int count = 0;
+            System.out.println("喵星人--" + id + "--出动了");
+            while (!stop) {
+                try {
+                    System.out.println("喵星人--" + id + "在努力抓耗子");
+                    long begin = System.currentTimeMillis();
+                    Rat rat = ratQue.take();
+                    long end = System.currentTimeMillis();
+                    long timeConsuming = (end -begin) / 1000;
+                    System.out.println("喵星人--" + id + "花了" + timeConsuming + "秒逮着" + rat.getName() + "，现在还有" + ratQue.size() + "只在那浪呢");
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+    public static void main(String[] args) {
+        ArrayBlockingQueueTest test = new ArrayBlockingQueueTest();
+        //三只生耗子机器和两只猫
+        test.startCatAndRat(3, 1);
+    }
+}
+```
+2. DelayQueue
+> DelayQueue 延时队列，底层通过PriorityQueue实现，按时间顺序排列的无界数组安全队列      
+> 元素必须实现Delayed接口，而Delayed接口继承于Comparable
+```java
+public class DelayQueue<E extends Delayed> extends AbstractQueue<E>
+    implements BlockingQueue<E> {
+
+    private final transient ReentrantLock lock = new ReentrantLock();
+    private final PriorityQueue<E> q = new PriorityQueue<E>();
+
+    /**
+     * 等待第一个元素的线程.
+     */
+    private Thread leader = null;
+
+    /**
+     * Condition signalled when a newer element becomes available
+     * at the head of the queue or a new thread may need to
+     * become leader.
+     */
+    private final Condition available = lock.newCondition();
+}
+```
+> 从DelayQueue中取元素时，只能取到满足Delayed接口getDelay()方法小于0的元素
+```java
+public class DelayQueueTest {
+
+    private final DelayQueue<GameAddict> gamerQue = new DelayQueue<>();
+    private final boolean stop = false;
+
+    private class GameAddict implements Delayed {
+        private final String name;
+        //都以毫秒为单位
+        private final long gameTime;  //游戏开始时间
+        private final long addictTime = 20 * 1000;    //游戏成瘾时间，到了这个时间就需要提醒游戏者了
+
+        public GameAddict(String name, long letsPlayAGame) {
+            this.name = name;
+            gameTime = letsPlayAGame;
+        }
+
+        @Override
+        public long getDelay(TimeUnit unit) {
+            long stopTime = gameTime + addictTime - System.currentTimeMillis();
+            return unit.convert(stopTime, TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public int compareTo(Delayed o) {
+            return (int)(this.gameTime / 1000 - ((GameAddict)o).gameTime / 1000);
+        }
+    }
+
+    public void letsPlayAGame() {
+        new Thread(()-> {
+            System.out.println("适度游戏益脑，沉迷游戏伤身");
+            while (!stop) {
+                try {
+                    GameAddict gamer = gamerQue.take();
+                    System.out.println(gamer.name + ",适度游戏益脑，沉迷游戏伤身");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+        new Thread(()-> {
+            int count = 0;
+            while (!stop) {
+                GameAddict gameAddict = new GameAddict("大兄弟" + count++ + "号", System.currentTimeMillis());
+                System.out.println(gameAddict.name + "开启了疯狂游戏时间");
+                try {
+                    gamerQue.put(gameAddict);
+                    TimeUnit.SECONDS.sleep(3);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
+    public static void main(String[] args) {
+        DelayQueueTest test = new DelayQueueTest();
+        test.letsPlayAGame();
+    }
+}
+```
+3. LinkedBlockingQueue
 
