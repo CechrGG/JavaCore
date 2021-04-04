@@ -171,7 +171,7 @@ Map 主要接口、类
 > > The name deque is short for "double ended queue" and is usually pronounced "deck"
 
 ### 2.5.1 非阻塞队列 
-1. LinkedList
+#### 2.5.1.1 LinkedList
 ```java
 public class QueueTest {
     public static void main(String[] args) {
@@ -208,7 +208,7 @@ public class QueueTest {
     }
 }
 ```
-2. PriorityQueue
+#### 2.5.1.2 PriorityQueue
 > 优先级队列，根据元素的优先级设定（实现Comparable或者Comparator)进行排序        
 > 底层实现原理是数组，二叉小顶堆   
 > 无界，线程不安全的
@@ -231,7 +231,7 @@ public class PriorityQueueTest {
 
 }
 ```
-3. ConcurrentLinkedQueue
+#### 2.5.1.3 ConcurrentLinkedQueue
 > 并发链表队列，CAS原理来实现入列和出列的线程安全，但不能保证遍历安全   
 > 不能添加null元素
 ### 2.5.2 阻塞队列
@@ -248,7 +248,7 @@ public class PriorityQueueTest {
 |int|drainTo(Collection<? super E> c, int maxElements)|删除队列指定最大个数的元素，并添加到指定集合中|
 
 > 下面通过几个常用的实现类来深入理解 
-1. ArrayBlockingQueue
+#### 2.5.2.1 ArrayBlockingQueue
 > 数组实现的有界阻塞FIFO队列，主要属性
 ```java
     /** The queued items */
@@ -504,7 +504,7 @@ public class ArrayBlockingQueueTest {
     }
 }
 ```
-2. DelayQueue
+#### 2.5.2.2 DelayQueue
 > DelayQueue 延时队列，底层通过PriorityQueue实现，按时间顺序排列的无界数组安全队列      
 > 元素必须实现Delayed接口，而Delayed接口继承于Comparable
 ```java
@@ -590,5 +590,48 @@ public class DelayQueueTest {
     }
 }
 ```
-3. LinkedBlockingQueue
+#### 2.5.2.3 PriorityBlockingQueue
+> 基于优先级调度的无界阻塞队列，在PriorityQueue的基础上实现线程安全阻塞
+#### 2.5.2.4 LinkedBlockingQueue
+> 基本特性跟ArrayBlockingQueue一样，只是底层原理为有界（默认为Integer.MAX_VALUE）单向链表，原理上不再赘述     
+> LinkedBlockingDeque为"双向链表"形式
+#### 2.5.2.5 SynchronousQueue
+> 同步队列，是一个非常特殊的队列，它实际不存储元素，通常应用于线程池，线程池相关详解中再做剖析       
+> 这里给一个简单的例子了解一下, 耗子出洞之后就等着（WAIT)，直到被抓线程才结束
+```java
+public class SynchronousQueueTest {
+    public static void main(String[] args) throws InterruptedException {
+        SynchronousQueue<Rat> ratQue = new SynchronousQueue<>();
+        new Thread(() -> {
+            Rat rat = new Rat();
+            rat.setName("耗子--" + Thread.currentThread().getName());
+            try {
+                System.out.println(rat.getName() + "出洞了");
+                ratQue.put(rat);
+                System.out.println(rat.getName() + "被逮着了");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
+        }).start();
+
+        TimeUnit.SECONDS.sleep(10);
+        System.out.println("屋里有老鼠了，快叫黑猫警长");
+        new Thread(() -> {
+            try {
+                Rat rat = ratQue.take();
+                System.out.println("黑猫警长真厉害，一出手就把[" + rat.getName() + "]给逮着了");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+}
+```
+#### 2.5.2.6 TransferQueue
+> TransferQueue 传输队列，是1.7引进的继承于BlockingQueue的接口，其实看了SynchronousQueue源码会发现里面已经引入了这个原理    
+> 核心就是增加了transfer方法，用于传递生产消费线程之间的元素     
+> 目前唯一的实现类为LinkedTransferQueue，实际上就是ConcurrentLinkedQueue、SynchronousQueue（公平模式）和LinkedBlockingQueue的超集。    
+> 而且LinkedTransferQueue更好用，因为它不仅仅综合了这几个类的功能，同时也提供了更高效的实现。底层是单向链表及各种CAS,比较复杂，暂时先了解。
+
+## 3 Map
