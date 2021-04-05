@@ -222,7 +222,7 @@ public class PriorityQueueTest {
             rat.setName("耗子" + i + "号");
             rat.setWeight(BigDecimal.valueOf(10 - i + Math.random()).setScale(2, BigDecimal.ROUND_HALF_UP));
             ratQue.offer(rat);
-        }
+        } 
         while (!ratQue.isEmpty()) {
             Rat rat = ratQue.poll();
             System.out.println(rat.getName() + "-" + rat.getWeight());
@@ -635,3 +635,336 @@ public class SynchronousQueueTest {
 > 而且LinkedTransferQueue更好用，因为它不仅仅综合了这几个类的功能，同时也提供了更高效的实现。底层是单向链表及各种CAS,比较复杂，暂时先了解。
 
 ## 3 Map
+> Map 是一种键值对映射（key-value）的数据结构,键不可重复，值可以重复，一个键最多映射一个值       
+> Java Map是顶级接口，主要方法包括：
+
+|return|method|description|
+|----|----|----|
+|int|size()|返回Map中的元素数量|
+|boolean|isEmpty()|判断Map中是否有元素|
+|boolean|containsKey(Object key)|判断Map中是否包含指定的key|
+|boolean|containsValue(Object value)|判断Map中是否包含指定的value|
+|V|get(Object key)|根据指定的key获取对应的value|
+|V|put(K key, V value)|添加一个key-value键值对|
+|V|remove(Object key)|删除一个指定key的元素|
+|void|putAll(Map<? extends K, ? extends V> m)|将给定的Map全部添加到当前Map中|
+|Set<K>|keySet()|返回所有Key的集合, key是Set集合满足不重复的特点|
+|Collection<V>|values()|返回所有Value的集合，value是Collection集合满足可重复特点|
+|Set<Map.Entry<K, V>>|entrySet()|返回所有键值对的集合，Entry是Map的内部接口，用于存放key-value|
+|default V|getOrDefault(Object key, V defaultValue)|如果有key对应的值则返回value,否则返回defaultValue|
+|default void|forEach(BiConsumer<? super K, ? super V> action)|根据某种条件遍历Map中的元素|
+|default void|replaceAll(BiFunction<? super K, ? super V, ? extends V> function)|根据某种条件替换Map中的键值|
+|default V|putIfAbsent(K key, V value)|当key没有对应的值或者对应的值是null时，才映射给定的值，否则返回给定的值|
+|default boolean|remove(Object key, Object value)|删除指定的键值对，仅当key对应的值与value相等时|
+|default boolean|replace(K key, V oldValue, V newValue)|更新键值对，仅当key对应的值与oldValue相等时|
+|default boolean|replace(K key, V value)|更新键值对，仅当key有对应的值时|
+|default V|computeIfAbsent(K key,Function<? super K, ? extends V> mappingFunction)|根据key计算value值并关联到key,仅当key对应的为null时|
+|default V|computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction)|根据key-value计算新value值并关联到key,仅当key有对应的值时，如果新值为null则删除该key|
+|default V|compute(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction)|根据key计算value值并关联到key,新值为null并且老值存在时删除该key|
+|default V|merge(K key, V value, BiFunction<? super V, ? super V, ? extends V> remappingFunction)|根据oldValue为null则直接关联value到key,否则根据oldvalue和value计算新值并关联到key,如果新值为null则删除该key|
+
+> 此外Map内部还有一个Entry接口，用于处理key-value
+
+|return|method|description|
+|----|----|----|
+|K|getKey()|返回key|
+|V|getValue()|返回value|
+|V|setValue(V value)|赋值value|
+*还有几个根据获取key、value顺序比较器的静态方法不再赘述*
+
+> Map 常用的实现类是HashMap、TreeMap和HashTable      
+> 先通过HashMap简单了解一下Map的使用
+```java
+public class MapTest {
+    public static void main(String[] args) {
+        Map<Integer, String> map = new HashMap<>();
+        map.put(null, null);
+        map.put(null, "null");
+        map.put(-1, null);
+        for(int i = 0; i < 10; i++) {
+            map.put(i, i + "v");
+        }
+        System.out.println(map.size());
+        map.compute(10, (k, v) -> k + v);
+        map.computeIfAbsent(10, Object::toString);
+        map.computeIfAbsent(20, (k) -> k + "v");
+        map.computeIfPresent(null, (k, v) -> k + v);
+        map.merge(5, "wu", (ov, nv) -> ov + nv);
+        map.replaceAll((k, v) -> k + v);
+        map.forEach((k,v) -> System.out.println(k + "--" + v));
+    }
+}
+```
+
+### 3.1 HashMap
+
+```java
+public class HashMap<K,V> extends AbstractMap<K,V>
+    implements Map<K,V>, Cloneable, Serializable {
+
+    /**
+     * The default initial capacity - MUST be a power of two.
+     * 默认数组大小16，必须是2的整数次幂
+     */
+    static final int DEFAULT_INITIAL_CAPACITY = 1 << 4; // aka 16
+
+    /**
+     * The maximum capacity, used if a higher value is implicitly specified
+     * by either of the constructors with arguments.
+     * MUST be a power of two <= 1<<30.
+     */
+    static final int MAXIMUM_CAPACITY = 1 << 30;
+
+    /**
+     * The load factor used when none specified in constructor.
+     * 加载因子，默认0.75
+     */
+    static final float DEFAULT_LOAD_FACTOR = 0.75f;
+
+    /**
+     * The bin count threshold for using a tree rather than list for a
+     * bin.  Bins are converted to trees when adding an element to a
+     * bin with at least this many nodes. The value must be greater
+     * than 2 and should be at least 8 to mesh with assumptions in
+     * tree removal about conversion back to plain bins upon
+     * shrinkage.
+     * 链表大于这个阈值后转化为红黑树
+     */
+    static final int TREEIFY_THRESHOLD = 8;
+
+    /**
+     * The bin count threshold for untreeifying a (split) bin during a
+     * resize operation. Should be less than TREEIFY_THRESHOLD, and at
+     * most 6 to mesh with shrinkage detection under removal.
+     * 树节点小于这个阈值后转化为链表
+     */
+    static final int UNTREEIFY_THRESHOLD = 6;
+
+    /**
+     * The smallest table capacity for which bins may be treeified.
+     * (Otherwise the table is resized if too many nodes in a bin.)
+     * Should be at least 4 * TREEIFY_THRESHOLD to avoid conflicts
+     * between resizing and treeification thresholds.
+     * 链表转化为树的最小容量，如果链表增加太长，但是数组长度还没有达到这个值，则数组扩容
+     */
+    static final int MIN_TREEIFY_CAPACITY = 64;
+
+    /**
+     * Basic hash bin node, used for most entries.  (See below for
+     * TreeNode subclass, and in LinkedHashMap for its Entry subclass.)
+     */
+    static class Node<K,V> implements Map.Entry<K,V> {
+        final int hash;
+        final K key;
+        V value;
+        Node<K,V> next;
+
+        Node(int hash, K key, V value, Node<K,V> next) {
+            this.hash = hash;
+            this.key = key;
+            this.value = value;
+            this.next = next;
+        }
+
+        public final K getKey()        { return key; }
+        public final V getValue()      { return value; }
+        public final String toString() { return key + "=" + value; }
+
+        public final int hashCode() {
+            return Objects.hashCode(key) ^ Objects.hashCode(value);
+        }
+
+        public final V setValue(V newValue) {
+            V oldValue = value;
+            value = newValue;
+            return oldValue;
+        }
+
+        public final boolean equals(Object o) {
+            if (o == this)
+                return true;
+            if (o instanceof Map.Entry) {
+                Map.Entry<?,?> e = (Map.Entry<?,?>)o;
+                if (Objects.equals(key, e.getKey()) &&
+                    Objects.equals(value, e.getValue()))
+                    return true;
+            }
+            return false;
+        }
+    }
+
+    /* ---------------- Static utilities -------------- */
+
+    /**
+     * Computes key.hashCode() and spreads (XORs) higher bits of hash
+     * to lower.  Because the table uses power-of-two masking, sets of
+     * hashes that vary only in bits above the current mask will
+     * always collide. (Among known examples are sets of Float keys
+     * holding consecutive whole numbers in small tables.)  So we
+     * apply a transform that spreads the impact of higher bits
+     * downward. There is a tradeoff between speed, utility, and
+     * quality of bit-spreading. Because many common sets of hashes
+     * are already reasonably distributed (so don't benefit from
+     * spreading), and because we use trees to handle large sets of
+     * collisions in bins, we just XOR some shifted bits in the
+     * cheapest possible way to reduce systematic lossage, as well as
+     * to incorporate impact of the highest bits that would otherwise
+     * never be used in index calculations because of table bounds.
+     */
+    static final int hash(Object key) {
+        int h;
+        return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+    }
+
+    /**
+     * Returns x's Class if it is of the form "class C implements
+     * Comparable<C>", else null.
+     */
+    static Class<?> comparableClassFor(Object x) {
+        if (x instanceof Comparable) {
+            Class<?> c; Type[] ts, as; Type t; ParameterizedType p;
+            if ((c = x.getClass()) == String.class) // bypass checks
+                return c;
+            if ((ts = c.getGenericInterfaces()) != null) {
+                for (int i = 0; i < ts.length; ++i) {
+                    if (((t = ts[i]) instanceof ParameterizedType) &&
+                        ((p = (ParameterizedType)t).getRawType() ==
+                         Comparable.class) &&
+                        (as = p.getActualTypeArguments()) != null &&
+                        as.length == 1 && as[0] == c) // type arg is c
+                        return c;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns k.compareTo(x) if x matches kc (k's screened comparable
+     * class), else 0.
+     */
+    @SuppressWarnings({"rawtypes","unchecked"}) // for cast to Comparable
+    static int compareComparables(Class<?> kc, Object k, Object x) {
+        return (x == null || x.getClass() != kc ? 0 :
+                ((Comparable)k).compareTo(x));
+    }
+
+    /**
+     * Returns a power of two size for the given target capacity.
+     */
+    static final int tableSizeFor(int cap) {
+        int n = cap - 1;
+        n |= n >>> 1;
+        n |= n >>> 2;
+        n |= n >>> 4;
+        n |= n >>> 8;
+        n |= n >>> 16;
+        return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+    }
+
+    /* ---------------- Fields -------------- */
+
+    /**
+     * The table, initialized on first use, and resized as
+     * necessary. When allocated, length is always a power of two.
+     * (We also tolerate length zero in some operations to allow
+     * bootstrapping mechanics that are currently not needed.)
+     */
+    transient Node<K,V>[] table;
+
+    /**
+     * Holds cached entrySet(). Note that AbstractMap fields are used
+     * for keySet() and values().
+     */
+    transient Set<Map.Entry<K,V>> entrySet;
+
+    /**
+     * The number of key-value mappings contained in this map.
+     */
+    transient int size;
+
+    /**
+     * The number of times this HashMap has been structurally modified
+     * Structural modifications are those that change the number of mappings in
+     * the HashMap or otherwise modify its internal structure (e.g.,
+     * rehash).  This field is used to make iterators on Collection-views of
+     * the HashMap fail-fast.  (See ConcurrentModificationException).
+     */
+    transient int modCount;
+
+    /**
+     * The next size value at which to resize (capacity * load factor).
+     *
+     * @serial
+     */
+    // (The javadoc description is true upon serialization.
+    // Additionally, if the table array has not been allocated, this
+    // field holds the initial array capacity, or zero signifying
+    // DEFAULT_INITIAL_CAPACITY.)
+    int threshold;
+
+    /**
+     * The load factor for the hash table.
+     *
+     * @serial
+     */
+    final float loadFactor;
+
+    /* ---------------- Public operations -------------- */
+
+    /**
+     * Constructs an empty <tt>HashMap</tt> with the specified initial
+     * capacity and load factor.
+     *
+     * @param  initialCapacity the initial capacity
+     * @param  loadFactor      the load factor
+     * @throws IllegalArgumentException if the initial capacity is negative
+     *         or the load factor is nonpositive
+     */
+    public HashMap(int initialCapacity, float loadFactor) {
+        if (initialCapacity < 0)
+            throw new IllegalArgumentException("Illegal initial capacity: " +
+                                               initialCapacity);
+        if (initialCapacity > MAXIMUM_CAPACITY)
+            initialCapacity = MAXIMUM_CAPACITY;
+        if (loadFactor <= 0 || Float.isNaN(loadFactor))
+            throw new IllegalArgumentException("Illegal load factor: " +
+                                               loadFactor);
+        this.loadFactor = loadFactor;
+        this.threshold = tableSizeFor(initialCapacity);
+    }
+
+    /**
+     * Constructs an empty <tt>HashMap</tt> with the specified initial
+     * capacity and the default load factor (0.75).
+     *
+     * @param  initialCapacity the initial capacity.
+     * @throws IllegalArgumentException if the initial capacity is negative.
+     */
+    public HashMap(int initialCapacity) {
+        this(initialCapacity, DEFAULT_LOAD_FACTOR);
+    }
+
+    /**
+     * Constructs an empty <tt>HashMap</tt> with the default initial capacity
+     * (16) and the default load factor (0.75).
+     */
+    public HashMap() {
+        this.loadFactor = DEFAULT_LOAD_FACTOR; // all other fields defaulted
+    }
+
+    /**
+     * Constructs a new <tt>HashMap</tt> with the same mappings as the
+     * specified <tt>Map</tt>.  The <tt>HashMap</tt> is created with
+     * default load factor (0.75) and an initial capacity sufficient to
+     * hold the mappings in the specified <tt>Map</tt>.
+     *
+     * @param   m the map whose mappings are to be placed in this map
+     * @throws  NullPointerException if the specified map is null
+     */
+    public HashMap(Map<? extends K, ? extends V> m) {
+        this.loadFactor = DEFAULT_LOAD_FACTOR;
+        putMapEntries(m, false);
+    }
+}
+```
