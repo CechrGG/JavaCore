@@ -944,41 +944,41 @@ public class HashMap<K,V> extends AbstractMap<K,V>
     final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
                    boolean evict) {
         Node<K,V>[] tab; Node<K,V> p; int n, i;
-        if ((tab = table) == null || (n = tab.length) == 0)
-            n = (tab = resize()).length;
-        if ((p = tab[i = (n - 1) & hash]) == null)
-            tab[i] = newNode(hash, key, value, null);
-        else {
+        if ((tab = table) == null || (n = tab.length) == 0)//table还未初始化或者容量为0
+            n = (tab = resize()).length;//扩容
+        if ((p = tab[i = (n - 1) & hash]) == null)//表的第p(通过n-1&hash计算)个位置为空
+            tab[i] = newNode(hash, key, value, null);//直接构造节点放入该位置
+        else {//否则更新该位置的结构
             Node<K,V> e; K k;
             if (p.hash == hash &&
-                ((k = p.key) == key || (key != null && key.equals(k))))
-                e = p;
-            else if (p instanceof TreeNode)
+                ((k = p.key) == key || (key != null && key.equals(k))))//hash相等且key相等，说明需要更新value
+                e = p;  
+            else if (p instanceof TreeNode) //如果此位置的节点是TreeNode, 调用TreeNode的put方法
                 e = ((TreeNode<K,V>)p).putTreeVal(this, tab, hash, key, value);
-            else {
-                for (int binCount = 0; ; ++binCount) {
+            else {  //否则此位置节点是链表节点
+                for (int binCount = 0; ; ++binCount) {  //遍历链表直到找到空位置
                     if ((e = p.next) == null) {
                         p.next = newNode(hash, key, value, null);
                         if (binCount >= TREEIFY_THRESHOLD - 1) // -1 for 1st
-                            treeifyBin(tab, hash);
+                            treeifyBin(tab, hash);  //当链表长度大于阈值8时，重构表
                         break;
                     }
                     if (e.hash == hash &&
                         ((k = e.key) == key || (key != null && key.equals(k))))
-                        break;
+                        break;  //找到了相同的key, 需要更新value
                     p = e;
                 }
             }
-            if (e != null) { // existing mapping for key
+            if (e != null) { // existing mapping for key. key已存在
                 V oldValue = e.value;
-                if (!onlyIfAbsent || oldValue == null)
-                    e.value = value;
+                if (!onlyIfAbsent || oldValue == null)//onlyIfAbsent这个参数如果为true, 表示仅当这个value为null时才能更新
+                    e.value = value;    //更新value
                 afterNodeAccess(e);
                 return oldValue;
             }
         }
-        ++modCount;
-        if (++size > threshold)
+        ++modCount; //map结构改变计数
+        if (++size > threshold) //如果大小超过阈值（容量*加载因子），需要扩容了
             resize();
         afterNodeInsertion(evict);
         return null;

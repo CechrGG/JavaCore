@@ -9,6 +9,8 @@ public class MapTest {
         map.put(null, null);
         map.put(null, "null");
         map.put(-1, null);
+        map.put(-2, null);
+        map.put(-100,null);
         for(int i = 0; i < 10; i++) {
             map.put(i, i + "v");
         }
