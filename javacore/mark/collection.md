@@ -930,6 +930,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 }
 ```
 > 几个核心方法的源码解析   
+> 插入
 ```java
     /**
      * Implements Map.put and related methods.
@@ -984,3 +985,114 @@ public class HashMap<K,V> extends AbstractMap<K,V>
         return null;
     }
 ```
+> 查询
+```java
+
+    /**
+     * Implements Map.get and related methods
+     *
+     * @param hash hash for key
+     * @param key the key
+     * @return the node, or null if none
+     */
+    final Node<K,V> getNode(int hash, Object key) {
+        Node<K,V>[] tab; Node<K,V> first, e; int n; K k;
+        if ((tab = table) != null && (n = tab.length) > 0 &&
+            (first = tab[(n - 1) & hash]) != null) {    //n-1&hash定位找到节点
+            if (first.hash == hash && // always check first node
+                ((k = first.key) == key || (key != null && key.equals(k))))     //key相等
+                return first;
+            if ((e = first.next) != null) { //否则找下一个节点
+                if (first instanceof TreeNode)  //查询树
+                    return ((TreeNode<K,V>)first).getTreeNode(hash, key);
+                do {
+                    if (e.hash == hash &&
+                        ((k = e.key) == key || (key != null && key.equals(k))))
+                        return e;   //遍历链表查询
+                } while ((e = e.next) != null);
+            }
+        }
+        return null;
+    }
+```
+> 扩容
+```java
+    final Node<K,V>[] resize() {
+        Node<K,V>[] oldTab = table;
+        int oldCap = (oldTab == null) ? 0 : oldTab.length;
+        int oldThr = threshold;
+        int newCap, newThr = 0;
+        if (oldCap > 0) {
+            if (oldCap >= MAXIMUM_CAPACITY) {   //超过最大容量则直接返回
+                threshold = Integer.MAX_VALUE;
+                return oldTab;
+            }
+            else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
+                     oldCap >= DEFAULT_INITIAL_CAPACITY)    //扩容两倍，没达到最大容量
+                newThr = oldThr << 1; // double threshold 阈值也扩大两倍
+        }
+        else if (oldThr > 0) // initial capacity was placed in threshold
+            newCap = oldThr;
+        else {               // zero initial threshold signifies using defaults
+            newCap = DEFAULT_INITIAL_CAPACITY;  //默认容量16
+            newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);//默认阈值12
+        }
+        if (newThr == 0) {
+            float ft = (float)newCap * loadFactor;
+            newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
+                      (int)ft : Integer.MAX_VALUE);
+        }
+        threshold = newThr;
+        @SuppressWarnings({"rawtypes","unchecked"})
+            Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap]; //新数组
+        table = newTab;
+        if (oldTab != null) {   //复制旧值
+            for (int j = 0; j < oldCap; ++j) {
+                Node<K,V> e;
+                if ((e = oldTab[j]) != null) {
+                    oldTab[j] = null;
+                    if (e.next == null) //单一元素
+                        newTab[e.hash & (newCap - 1)] = e;  //新数组定位赋值
+                    else if (e instanceof TreeNode) //红黑树
+                        ((TreeNode<K,V>)e).split(this, newTab, j, oldCap);//重构树，可能转为链表
+                    else { // preserve order    //链表，因为扩容两倍，链表也拆为两队，如果新增的hash位为0则索引不变，否则增加oldCap
+                        Node<K,V> loHead = null, loTail = null;
+                        Node<K,V> hiHead = null, hiTail = null;
+                        Node<K,V> next;
+                        do {
+                            next = e.next;
+                            if ((e.hash & oldCap) == 0) { //新增hash位为0，尾插
+                                if (loTail == null)
+                                    loHead = e;
+                                else
+                                    loTail.next = e;
+                                loTail = e;
+                            }
+                            else { //新增hash位为1
+                                if (hiTail == null)
+                                    hiHead = e;
+                                else
+                                    hiTail.next = e;
+                                hiTail = e;
+                            }
+                        } while ((e = next) != null);
+                        if (loTail != null) {
+                            loTail.next = null;
+                            newTab[j] = loHead;
+                        }
+                        if (hiTail != null) {
+                            hiTail.next = null;
+                            newTab[j + oldCap] = hiHead;    //索引+oldCap
+                        }
+                    }
+                }
+            }
+        }
+        return newTab;
+    }
+```
+
+### 3.2 LinkedHashMap 
+> 是HashMap的子类，不同之处主要是通过双向链表的形式维护key的顺序
+### 3.3 TreeMap
+> TreeMap的底层原理是红黑树
