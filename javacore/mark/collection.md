@@ -1096,3 +1096,7 @@ public class HashMap<K,V> extends AbstractMap<K,V>
 > 是HashMap的子类，不同之处主要是通过双向链表的形式维护key的顺序
 ### 3.3 TreeMap
 > TreeMap的底层原理是红黑树
+### 3.4 HashTable
+> 与HashMap类似，Key value均不能为空，虽然是线程安全的，但是通过synchronized实现性能也较差
+### 3.5 ConcurrentHashMap
+> HashMap的线程安全版，且比HashTable高效很多，主要通过分段锁实现
