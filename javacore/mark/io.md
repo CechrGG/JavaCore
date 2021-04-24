@@ -4,11 +4,77 @@
 
 ![io流](image/io/io.jpg)
 
-> 字节流：每次读取(写出)一个字节，当传输的资源文件有中文时，就会出现乱码。     
+> 字节流：每次读取(写出)一个字节，当传输的资源文件有中文时，可能出现乱码。     
 > 字符流：每次读取(写出)两个字节，有中文时，使用该流就可以正确传输显示中文。
 
-## 1 InputStream 字节输入流
+## 1 InputStream/OutputStream 字节输入/输出流
+> 所有字节输入/输出流的父类，这里以FileInputStream/FileOutputStream为例简单看一下
+```java
+public class IOStreamTest {
+    public static void main(String[] args) {
+        FileInputStream fis = null;
+        FileOutputStream fos = null;
+        try {
+            File file = new File("F:\\idea\\JavaCore\\javacore\\mark\\io.md");
+            if(!file.exists()) {
+                file.createNewFile();
+            }
+            File bakFile = new File("F:\\idea\\JavaCore\\javacore\\mark\\io_bak.md");
+            if(!bakFile.exists()) {
+                bakFile.createNewFile();
+            }
+            fis = new FileInputStream(file);
+            fos = new FileOutputStream(bakFile);
+            byte[] buffer = new byte[1024];
+            int count;
+            int total = 0;
+            while ((count = fis.read(buffer)) != -1) { //一次读取buffer.length字节
+                total += count;
+                System.out.println("已读取" + total + "个字节");
+                fos.write(buffer, 0, count);    //如果直接write(buffer),最后一次默认刷buffer.length
+            }
+//            fos.flush();  //FileOutputStream中并没有重写flush, 而OutputStream中的flush也啥都没做
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {   //关闭流还是很重要的，否则可能会产生问题
+                if (fis != null) {
+                    fis.close();
+                }
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
+    }
+}
+```
+
+## 2 Reader/Writer 字符输入/输出流
+> 以FileReader/FileWriter为例简单看一下
+```java
+public class RWStreamTest {
+    public static void main(String[] args) {
+        try {
+            FileReader reader = new FileReader("F:\\idea\\JavaCore\\javacore\\mark\\io.md");
+            FileWriter writer = new FileWriter("F:\\idea\\JavaCore\\javacore\\mark\\io_bak.md");
+            char[] buffer = new char[1024];
+            int count;
+            while ((count = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, count);
+            }
+            writer.flush();
+            writer.close();
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
 
 ## Serializable 序列化
 处理对象流的一种机制
