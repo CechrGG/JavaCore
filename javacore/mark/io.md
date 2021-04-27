@@ -75,6 +75,24 @@ public class RWStreamTest {
     }
 }
 ```
+## BIO、NIO、AIO
+> NIO File
+```java
+public class FilesTest {
+    public static void main(String[] args) {
+        try {
+            List<String> strings = Files.readAllLines(Paths.get("F:/idea/JavaCore/javacore/mark/io.md"));
+            strings.forEach(System.out::println);
+            for(String lines : strings) {
+                Files.write(Paths.get("F:/idea/JavaCore/javacore/mark/io_bak.md"), 
+                        Collections.singleton(lines), StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
 
 ## Serializable 序列化
 处理对象流的一种机制
