@@ -1,4 +1,4 @@
-# Java IO 详解
+# 1 Java IO 详解
 > IO主要指输入输出流，流的概念即是任何有能力产出数据的数据源对象或者是有能力接受数据的接收端对象  
 > JAVA IO采用装饰者模式，按功能划分Stream, 可以动态搭配这些Stream
 
@@ -7,7 +7,7 @@
 > 字节流：每次读取(写出)一个字节，当传输的资源文件有中文时，可能出现乱码。     
 > 字符流：每次读取(写出)两个字节，有中文时，使用该流就可以正确传输显示中文。
 
-## 1 InputStream/OutputStream 字节输入/输出流
+## 1.1 InputStream/OutputStream 字节输入/输出流
 > 所有字节输入/输出流的父类，这里以FileInputStream/FileOutputStream为例简单看一下
 ```java
 public class IOStreamTest {
@@ -53,7 +53,7 @@ public class IOStreamTest {
 }
 ```
 
-## 2 Reader/Writer 字符输入/输出流
+## 1.2 Reader/Writer 字符输入/输出流
 > 以FileReader/FileWriter为例简单看一下
 ```java
 public class RWStreamTest {
@@ -75,7 +75,7 @@ public class RWStreamTest {
     }
 }
 ```
-## BIO、NIO、AIO
+## 1.3 BIO、NIO、AIO
 > NIO File
 ```java
 public class FilesTest {
@@ -93,6 +93,12 @@ public class FilesTest {
     }
 }
 ```
+> 网络编程中的IO
+> * BIO 同步阻塞IO,可以简单理解为一个线程处理一个连接，发起请求和处理请求都是同步阻塞的
+> * NIO 同步非阻塞IO,可以简单理解为一个线程处理多个连接，发起请求和处理请求是同步非阻塞的
+> * AIO 异步非阻塞IO,可以简单理解为一个线程处理一个有效连接，发起请求和处理请求都是异步非阻塞的
+
+### 1.3.1 BIO实例
 
 ## Serializable 序列化
 处理对象流的一种机制
