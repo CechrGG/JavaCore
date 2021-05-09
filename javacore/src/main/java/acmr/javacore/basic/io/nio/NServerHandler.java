@@ -3,15 +3,13 @@ package acmr.javacore.basic.io.nio;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
-import java.net.ServerSocket;
-import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Set;
@@ -62,24 +60,34 @@ public class NServerHandler implements Runnable{
                             socketChannel.configureBlocking(false);
                             socketChannel.register(selector, SelectionKey.OP_READ);
                         }
-                    }
-                    if(key.isReadable()) {  //读处理
-                        SocketChannel socketChannel = (SocketChannel) key.channel();
-                        ByteBuffer buffer = ByteBuffer.allocate(1024);  //开辟1K缓冲区
-                        int read;
-                        while ((read = socketChannel.read(buffer)) != -1) {
-                            buffer.flip();
-                            byte[] bytes = new byte[buffer.remaining()];
-                            buffer.get(bytes);
-                            String ret = new String(bytes, StandardCharsets.UTF_8);
-                            ret = "接收到消息：" + ret;
-                            byte[] result = ret.getBytes(StandardCharsets.UTF_8);
-                            ByteBuffer retBuffer = ByteBuffer.allocate(result.length);
-                            retBuffer.put(result);
-                            retBuffer.flip();
-                            socketChannel.write(retBuffer);
+                        if(key.isReadable()) {  //读处理
+                            SocketChannel socketChannel = (SocketChannel) key.channel();
+                            ByteBuffer buffer = ByteBuffer.allocate(1024);  //开辟1K缓冲区
+                            int read;
+                            boolean close = false;
+                            while (socketChannel.read(buffer) > 0) {
+                                buffer.flip();
+                                byte[] bytes = new byte[buffer.remaining()];
+                                buffer.get(bytes);
+                                String ret = new String(bytes, StandardCharsets.UTF_8);
+                                if("end".equals(ret)) {
+                                    close = true;
+                                } else {
+                                    ret = "接收到客户端消息：" + ret;
+                                }
+                                byte[] result = ret.getBytes(StandardCharsets.UTF_8);
+                                ByteBuffer retBuffer = ByteBuffer.allocate(result.length);
+                                retBuffer.put(result);
+                                retBuffer.flip();
+                                socketChannel.write(retBuffer);
+                                if(close)
+                                    break;
+                            }
+                            if(close) {
+                                socketChannel.close();
+                                logger.warn("此链接通道已关闭");
+                            }
                         }
-                        socketChannel.close();
                     }
                 }
             }

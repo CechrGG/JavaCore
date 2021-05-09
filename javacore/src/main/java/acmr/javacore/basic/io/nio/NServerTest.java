@@ -1,21 +1,20 @@
 package acmr.javacore.basic.io.nio;
 
-import acmr.javacore.basic.io.bio.ServerHandler;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.Scanner;
 
 public class NServerTest {
-    private final Logger logger = LogManager.getLogger(acmr.javacore.basic.io.bio.ServerTest.class);
+    private final Logger logger = LogManager.getLogger(NServerTest.class);
     private static final int DEFAULT_PORT = 8888;
     private final int port;
-    private final NServerHandler handler = null;
+    private NServerHandler handler = null;
 
     public NServerTest(int port) {
         this.port = port;
+        handler = new NServerHandler(port);
     }
 
     public NServerTest() {
@@ -27,12 +26,16 @@ public class NServerTest {
     }
 
     public synchronized void start() {
-        if(handler != null) {
-            logger.info("服务器已经启动，端口为：" + port);
-            return;
-        }
+        new Thread(handler).start();
     }
 
-    public synchronized void stop() {
+    public static void main(String[] args) throws IOException {
+        NServerTest test = new NServerTest();
+        test.start();
+        NClientHandler client = new NClientHandler("localhost", 8888);
+        new Thread(client).start();
+        while (true) {
+            client.sendMsg(new Scanner(System.in).nextLine());
+        }
     }
 }
