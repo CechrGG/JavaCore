@@ -76,7 +76,9 @@ public class RWStreamTest {
 }
 ```
 ## 1.3 BIO、NIO、AIO
-> NIO File
+> BIO是以流的方式处理数据的，面向流的IO一次一个字节地处理数据，简单方便，但效率不高；
+> NIO使用块IO的处理方式，每一个操作都在一步中读取或者写出一个数据块(缓存)。
+> NIO File 简单使用
 ```java
 public class FilesTest {
     public static void main(String[] args) {
@@ -98,7 +100,7 @@ public class FilesTest {
 > * NIO 同步非阻塞IO,可以简单理解为一个线程处理多个连接，发起请求和处理请求是同步非阻塞的
 > * AIO 异步非阻塞IO,可以简单理解为一个线程处理一个有效连接，发起请求和处理请求都是异步非阻塞的
 
-### 1.3.1 BIO实例
+### 1.3.1 
 
 ## Serializable 序列化
 处理对象流的一种机制
