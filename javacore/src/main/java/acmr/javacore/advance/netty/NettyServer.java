@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 
 public class NettyServer {
 
-    private int port = 9999;
+    private final int port;
 
     public NettyServer(int port) {
         this.port = port;
@@ -45,7 +45,7 @@ public class NettyServer {
         group.shutdownGracefully().sync();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         NettyServer server = new NettyServer(9999);
         try {
             server.start();
