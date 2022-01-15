@@ -115,6 +115,48 @@ public class ReflectSum {
 		}
 		return sb;
 	}
+
+	public static String objToString(Object obj) throws IllegalAccessException {
+		if(obj == null) {
+			return "null";
+		}
+		if(obj instanceof String) {
+			return (String) obj;
+		}
+		Class<?> aClass = obj.getClass();
+		if(aClass.isArray()) {
+			StringBuilder sb = new StringBuilder(aClass.getTypeName()).append("[]{");
+			for(int i = 0; i < Array.getLength(obj); i++) {
+				Object val = Array.get(obj, i);
+				if(aClass.getComponentType().isPrimitive()) {
+					sb.append(val);
+				} else {
+					sb.append(objToString(val));
+				}
+				sb.append(", ");
+			}
+			int pos = sb.lastIndexOf(",");
+			sb.replace(pos, pos + 2, "}");
+			return sb.toString();
+		}
+
+		StringBuilder sb = new StringBuilder(aClass.getName()).append("[");
+		Field[] fields = aClass.getDeclaredFields();
+		AccessibleObject.setAccessible(fields, true);
+		for(Field field : fields) {
+			sb.append(field.getName()).append(" = ");
+			Object val = field.get(obj);
+			if(field.getType().isPrimitive()) {
+				sb.append(val);
+			} else {
+				sb.append(objToString(val));
+			}
+			sb.append(", ");
+		}
+		int pos = sb.lastIndexOf(", ");
+		sb.replace(pos, pos + 2, "]");
+		return sb.toString();
+	}
 	/**
 	 * @param args
 	 */
@@ -122,8 +164,9 @@ public class ReflectSum {
 		// TODO Auto-generated method stub
 		try {
 //			ReflectSum.testClass();
-			ReflectSum.printClass("");
-		} catch (ClassNotFoundException e) {
+//			ReflectSum.printClass("");
+			System.out.println(ReflectSum.objToString(new User("1", "guohz", 31)));
+		} catch (IllegalAccessException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
