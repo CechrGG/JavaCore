@@ -6,6 +6,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
 
+/**
+ * @author GuoGuo
+ * @version 1.0
+ * @date 2022/01/15
+ */
 public class StringUtil {
 
     /**
@@ -15,13 +20,14 @@ public class StringUtil {
      * @return 空返回true,非空返回false
      */
     public static boolean isEmpty(String s) {
-        return null == s || s.trim().equals("") || s.trim().equals("null") || s.trim().equals("undefined");
+        return null == s || "".equals(s.trim()) || "null".equals(s.trim()) || "undefined".equals(s.trim());
     }
 
     public static final SimpleDateFormat FORMAT_DATETIME = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static final SimpleDateFormat FORMAT_DATE = new SimpleDateFormat("yyyy-MM-dd");
     public static final SimpleDateFormat FORMAT_TIME = new SimpleDateFormat("HH:mm:ss");
     public static final int DAY_TIME = 24 * 60 * 60 * 1000;
+    public static final int MOBILE_LENGTH = 11;
     public static final char[] MOBILE_POOL= {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
 
     public static Date strToDatetime(String date) throws ParseException {
@@ -53,7 +59,7 @@ public class StringUtil {
     public static String getMobile() {
         StringBuilder mobile = new StringBuilder("1");
         Random random = new Random();
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < MOBILE_LENGTH - 1; i++) {
             mobile.append(MOBILE_POOL[random.nextInt(MOBILE_POOL.length)]);
         }
         return mobile.toString();
