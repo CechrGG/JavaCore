@@ -8,7 +8,6 @@ import java.util.Scanner;
 /**
  * @author guohz
  * @date 2020年9月15日
- * @description ReflectSum
  */
 public class ReflectSum {
 
