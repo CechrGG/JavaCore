@@ -1,10 +1,10 @@
 package acmr.javacore.basic.thread;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GanFanRunnable implements Runnable{
-    private final Logger logger = LogManager.getLogger(GanFanRunnable.class);
+    private final Logger logger = LoggerFactory.getLogger(GanFanRunnable.class);
     private final String name;
     public GanFanRunnable(String name) {
         this.name = name;

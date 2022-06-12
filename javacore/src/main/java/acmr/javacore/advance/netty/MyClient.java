@@ -6,11 +6,11 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MyClient {
-    private final Logger logger = LogManager.getLogger(MyClient.class);
+    private final Logger logger = LoggerFactory.getLogger(MyClient.class);
     private final String ip;
     private final int port;
 

@@ -3,17 +3,17 @@ package acmr.springframework.annotation.service;
 import acmr.springframework.annotation.entity.Slave;
 import acmr.springframework.util.SpringAtUtil;
 import acmr.springframework.util.StringUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Random;
 
 public class SlaveFactory implements Job {
-    private final Logger logger = LogManager.getLogger(SlaveFactory.class);
+    private final Logger logger = LoggerFactory.getLogger(SlaveFactory.class);
     private final String openTime = "2020-12-31";   //开业时间
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {

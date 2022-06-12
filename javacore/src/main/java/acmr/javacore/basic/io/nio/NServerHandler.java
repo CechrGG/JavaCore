@@ -1,7 +1,7 @@
 package acmr.javacore.basic.io.nio;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,7 +15,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class NServerHandler implements Runnable{
-    private final Logger logger = LogManager.getLogger(NServerHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NServerHandler.class);
     private Selector selector = null;
     private ServerSocketChannel channel = null;
     private final int port;

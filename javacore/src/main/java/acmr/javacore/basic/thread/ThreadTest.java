@@ -14,5 +14,6 @@ public class ThreadTest {
         new Thread(myRunnable).start();
         new Thread(task).start();
         System.out.println(task.get());
+        System.out.println("aaa");
     }
 }

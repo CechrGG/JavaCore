@@ -1,7 +1,7 @@
 package acmr.javacore.basic.io.nio;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 public class NClientHandler implements Runnable{
-    private final Logger logger = LogManager.getLogger(NClientHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(NClientHandler.class);
     private final String ip;
     private final int port;
     private Selector selector = null;
@@ -76,9 +76,10 @@ public class NClientHandler implements Runnable{
                                 }
                                 result.append("收到服务端消息：" + info);
                             }
-                            logger.info(result);
-                            if(close)
+                            logger.info(String.valueOf(result));
+                            if(close) {
                                 socketChannel.close();
+                            }
                         }
                     }
                 }

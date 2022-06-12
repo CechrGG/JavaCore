@@ -11,11 +11,11 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpRequestDecoder;
 import io.netty.handler.codec.http.HttpResponseEncoder;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class HttpServer {
-    Logger logger = LogManager.getLogger(HttpServer.class);
+    Logger logger = LoggerFactory.getLogger(HttpServer.class);
     private final int port;
     private final int maxContentLength;
 

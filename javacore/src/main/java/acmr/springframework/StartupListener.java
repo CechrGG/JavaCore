@@ -6,15 +6,15 @@ import acmr.springframework.util.SpringXmlUtil;
 import acmr.springframework.util.timer.AnnotationTimerService;
 import acmr.springframework.util.timer.XmlTimerService;
 import acmr.springframework.xml.service.CatFactory;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 public class StartupListener implements ServletContextListener {
 
-    private final Logger logger = LogManager.getLogger(StartupListener.class);
+    private final Logger logger = LoggerFactory.getLogger(StartupListener.class);
 
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {

@@ -1,15 +1,15 @@
 package acmr.springframework.util.timer;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
 public class XmlTimerService {
 
-    private final Logger logger = LogManager.getLogger(XmlTimerService.class);
+    private final Logger logger = LoggerFactory.getLogger(XmlTimerService.class);
     private Properties cronMap;
     private Scheduler scheduler;
 

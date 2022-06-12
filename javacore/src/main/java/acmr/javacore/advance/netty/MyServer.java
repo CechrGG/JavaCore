@@ -8,11 +8,11 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MyServer {
-    Logger logger = LogManager.getLogger(MyServer.class);
+    Logger logger = LoggerFactory.getLogger(MyServer.class);
     private final int port;
 
     public MyServer(int port) {

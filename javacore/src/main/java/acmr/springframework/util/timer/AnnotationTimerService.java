@@ -1,9 +1,9 @@
 package acmr.springframework.util.timer;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.PropertiesFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.ClassPathResource;
@@ -16,7 +16,7 @@ import java.util.Properties;
 @Service("atTimerSrv")
 public class AnnotationTimerService {
 
-    private final Logger logger = LogManager.getLogger(AnnotationTimerService.class);
+    private final Logger logger = LoggerFactory.getLogger(AnnotationTimerService.class);
     @Resource(name = "crons")
     private Properties crons;
     private Scheduler scheduler;

@@ -1,10 +1,11 @@
 package acmr.javacore.basic.thread;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FanRunnable implements Runnable{
-    private final Logger logger = LogManager.getLogger(FanRunnable.class);
+    private final Logger logger = LoggerFactory.getLogger(FanRunnable.class);
     private int countSelf = 0;
 
     @Override

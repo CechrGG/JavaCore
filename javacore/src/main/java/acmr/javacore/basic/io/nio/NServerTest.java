@@ -1,13 +1,13 @@
 package acmr.javacore.basic.io.nio;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Scanner;
 
 public class NServerTest {
-    private final Logger logger = LogManager.getLogger(NServerTest.class);
+    private final Logger logger = LoggerFactory.getLogger(NServerTest.class);
     private static final int DEFAULT_PORT = 8888;
     private final int port;
     private NServerHandler handler = null;

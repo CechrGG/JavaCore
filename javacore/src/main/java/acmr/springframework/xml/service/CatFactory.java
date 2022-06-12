@@ -3,18 +3,18 @@ package acmr.springframework.xml.service;
 import acmr.springframework.util.SpringXmlUtil;
 import acmr.springframework.util.StringUtil;
 import acmr.springframework.xml.entity.Cat;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Date;
 import java.util.Random;
 
 public class CatFactory implements Job {
 
-    private Logger logger = LogManager.getLogger(CatFactory.class);
+    private Logger logger = LoggerFactory.getLogger(CatFactory.class);
     private final String openTime = "2020-12-31";   //开业时间
 
     @Override

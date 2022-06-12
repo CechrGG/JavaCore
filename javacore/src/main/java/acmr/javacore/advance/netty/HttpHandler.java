@@ -5,13 +5,13 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.*;
 import io.netty.util.AsciiString;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 
 public class HttpHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
-    private final Logger logger = LogManager.getLogger(HttpHandler.class);
+    private final Logger logger = LoggerFactory.getLogger(HttpHandler.class);
 
     private final AsciiString contentType = HttpHeaderValues.TEXT_PLAIN;
 

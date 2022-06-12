@@ -1,7 +1,7 @@
 package acmr.javacore.basic.io.bio;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -9,7 +9,7 @@ import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
 public class ServerTest {
-    private final Logger logger = LogManager.getLogger(ServerTest.class);
+    private final Logger logger = LoggerFactory.getLogger(ServerTest.class);
     private static final int DEFAULT_PORT = 8888;
     private final int port;
     private ServerSocket server = null;

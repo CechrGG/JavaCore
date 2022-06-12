@@ -1,7 +1,7 @@
 package acmr.javacore.basic.io.bio;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.net.Socket;
 import java.util.concurrent.TimeUnit;
 
 public class ClientTest implements Runnable{
-    private final Logger logger = LogManager.getLogger(ClientTest.class);
+    private final Logger logger = LoggerFactory.getLogger(ClientTest.class);
     private final String ip;
     private final int port;
     private final int number;
