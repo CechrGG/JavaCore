@@ -19,6 +19,7 @@ public class InterruptTest {
                     TimeUnit.MILLISECONDS.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    //阻塞状态下的线程抛出这个异常会复位中断状态，需要再此调用
                     Thread.currentThread().interrupt();
                 }
             }
