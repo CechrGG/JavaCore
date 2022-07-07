@@ -16,3 +16,16 @@ systemctl enable docker
 systemctl start docker
 ```
 ### 1.2 Docker 镜像
+
+* dockerhub 下载镜像
+```shell
+docker pull apacherocketmq/rocketmq-dashboard:latest
+```
+* 查看本地镜像
+```shell
+docker images
+```
+* 运行
+```shell
+docker run -d --name rocketmq-dashboard -e "JAVA_OPTS=-Drocketmq.namesrv.addr=127.0.0.1:9876" -p 8080:8080 -t apacherocketmq/rocketmq-dashboard:latest
+```
